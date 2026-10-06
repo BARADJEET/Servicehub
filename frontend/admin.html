@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Governance & Verification Portal | ServiceHub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                            950: '#1e1b4b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        mono: ['"Inter"', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased min-h-screen flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+
+    <!-- Admin Header -->
+    <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
+                    <i data-lucide="shield" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base sm:text-lg font-black tracking-tight text-white leading-none">ServiceHub Admin Governance</h1>
+                        <span class="bg-indigo-500/20 text-indigo-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-indigo-500/30 uppercase tracking-wider">Root Console</span>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">KYC Auditing & Transaction Ledger</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <a href="/" class="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 px-3 py-2 rounded-xl border border-slate-700/60 transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4 text-indigo-400"></i> Customer Marketplace
+                </a>
+                <span id="admin-user-email" class="text-xs text-slate-200 font-bold bg-slate-800 px-3.5 py-2 rounded-xl border border-slate-700 hidden sm:inline-block">
+                    admin@servicehub.com
+                </span>
+                <button onclick="handleAdminLogout()" class="text-xs text-rose-400 hover:text-rose-300 font-bold px-3 py-2 rounded-xl hover:bg-rose-950/40 transition cursor-pointer">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- KPI Cards Grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400 font-extrabold uppercase tracking-wider">Total Customers</span>
+                    <div class="w-9 h-9 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center">
+                        <i data-lucide="users" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <span id="kpi-total-cust" class="text-3xl sm:text-4xl font-black text-white mt-4 font-tabular">0</span>
+            </div>
+
+            <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400 font-extrabold uppercase tracking-wider">Verified Pros</span>
+                    <div class="w-9 h-9 rounded-xl bg-indigo-950 text-indigo-400 flex items-center justify-center border border-indigo-800/50">
+                        <i data-lucide="wrench" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <span id="kpi-total-workers" class="text-3xl sm:text-4xl font-black text-indigo-400 mt-4 font-tabular">0</span>
+            </div>
+
+            <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400 font-extrabold uppercase tracking-wider">Pending KYC</span>
+                    <div class="w-9 h-9 rounded-xl bg-amber-950 text-amber-400 flex items-center justify-center border border-amber-800/50">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <span id="kpi-pending-kyc" class="text-3xl sm:text-4xl font-black text-amber-400 mt-4 font-tabular">0</span>
+            </div>
+
+            <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400 font-extrabold uppercase tracking-wider">Gross Volume</span>
+                    <div class="w-9 h-9 rounded-xl bg-emerald-950 text-emerald-400 flex items-center justify-center border border-emerald-800/50">
+                        <i data-lucide="indian-rupee" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <span id="kpi-total-rev" class="text-3xl sm:text-4xl font-black text-emerald-400 mt-4 font-tabular">₹0</span>
+                <span class="text-[11px] text-slate-400 mt-1 block font-medium">Paid: <strong id="kpi-paid-rev" class="text-emerald-300">₹0</strong> • Pending: <strong id="kpi-pending-rev" class="text-amber-400">₹0</strong></span>
+            </div>
+        </div>
+
+        <!-- Pending Worker KYC Verification Desk -->
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-black text-white flex items-center gap-2 tracking-tight">
+                        <i data-lucide="user-check" class="w-5 h-5 text-amber-400"></i> Worker KYC Verification Desk
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Audit and approve certified professionals before enabling them on the public marketplace</p>
+                </div>
+                <button onclick="loadAdminDashboard()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 rounded-xl transition flex items-center gap-1.5 cursor-pointer">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
+                </button>
+            </div>
+            <div id="admin-pending-workers" class="space-y-3"></div>
+        </div>
+
+        <!-- Recent Transactions & Live Bookings Table -->
+        <div class="space-y-4 pt-4">
+            <div>
+                <h3 class="text-xl font-black text-white flex items-center gap-2 tracking-tight">
+                    <i data-lucide="layers" class="w-5 h-5 text-indigo-400"></i> Platform Bookings & Two-Stage OTP Audit Ledger
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Real-time ledger of on-demand customer bookings, assigned technicians, and status transitions</p>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-800 bg-slate-950/60 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
+                                <th class="py-4 px-5">Booking Ref</th>
+                                <th class="py-4 px-5">Customer</th>
+                                <th class="py-4 px-5">Technician</th>
+                                <th class="py-4 px-5">Category</th>
+                                <th class="py-4 px-5">Inspection Fee</th>
+                                <th class="py-4 px-5">Status</th>
+                                <th class="py-4 px-5">Payment</th>
+                                <th class="py-4 px-5">Created At</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-bookings-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl text-slate-100 relative">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-600/30 border border-indigo-500/40 text-indigo-400 flex items-center justify-center mb-4">
+                <i data-lucide="lock" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-2xl font-black text-white">Administrator Access</h3>
+            <p class="text-xs text-slate-400 mt-1">Authenticate with platform administrator credentials.</p>
+
+            <form onsubmit="handleAdminLogin(event)" class="mt-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Admin Email</label>
+                    <input type="email" id="admin-login-email" value="admin@servicehub.com" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Password</label>
+                    <input type="password" id="admin-login-password" value="Admin@123" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="p-3 bg-indigo-950/80 border border-indigo-800/60 rounded-2xl text-[11px] text-indigo-200">
+                    <strong class="block text-white font-extrabold">Default Admin Credentials:</strong>
+                    <div class="mt-1">
+                        <code>admin@servicehub.com</code> / <code>Admin@123</code>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-indigo-600/30 transition cursor-pointer">
+                    Authenticate Admin
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/admin.js"></script>
+    <script>
+        if (window.lucide) lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServiceHub | Verified On-Demand Home Services & Hyperlocal Dispatch</title>
+    <meta name="description" content="Book background-verified electricians, plumbers, carpenters, AC technicians and cleaners in ~30 mins. Two-stage OTP security, upfront pricing, and seamless QR payments.">
+
+    <!-- Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                            950: '#1e1b4b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', '"Inter"', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom Upgraded Modern Stylesheet -->
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col selection:bg-indigo-600 selection:text-white">
+
+    <!-- ==================== TOP ANNOUNCEMENT & LIVE DISPATCH TICKER ==================== -->
+    <aside class="bg-slate-950 text-slate-300 border-b border-slate-800/80 py-2 px-4 text-xs font-mono">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center gap-2.5">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold uppercase tracking-wider">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    28 Pros Live Now
+                </span>
+                <span class="hidden md:inline text-slate-600">•</span>
+                <span class="text-slate-300 text-[11px]">Hyperlocal Dispatch across Ahmedabad • Avg response: ~24 mins</span>
+            </div>
+            <div class="flex items-center gap-4 text-[11px] text-slate-400">
+                <span class="flex items-center gap-1.5 text-indigo-300">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-400"></i>
+                    100% Aadhaar &amp; Police Verified
+                </span>
+                <span class="hidden md:inline text-slate-700">|</span>
+                <a href="/worker" class="hover:text-white transition-colors">Join as Pro</a>
+                <span class="text-slate-700">|</span>
+                <a href="/admin" class="hover:text-white transition-colors">Admin Console</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ==================== GLOBAL NAVIGATION HEADER ==================== -->
+    <header class="sticky top-0 z-40 glass-nav border-b border-slate-200/80 shadow-xs transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3.5 cursor-pointer group" onclick="switchTab('marketplace')">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-700 via-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30 group-hover:scale-105 group-hover:shadow-indigo-600/50 transition duration-200">
+                    <i data-lucide="shield-check" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <h1 class="text-xl font-black tracking-tight text-slate-950 leading-none">ServiceHub</h1>
+                        <span class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-wider shadow-xs">PRO</span>
+                    </div>
+                    <span class="text-[10px] font-bold text-indigo-600 tracking-wider uppercase block mt-0.5">Hyperlocal • Two-Stage OTP Secured</span>
+                </div>
+            </div>
+
+            <!-- Header Navigation -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <nav class="flex items-center gap-1 bg-slate-100/90 p-1 rounded-2xl border border-slate-200/70 shadow-inner">
+                    <button data-nav-target="marketplace" onclick="switchTab('marketplace')" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-indigo-700 shadow-xs transition duration-150 flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="store" class="w-3.5 h-3.5"></i> Marketplace
+                    </button>
+                    <button data-nav-target="bookings" onclick="switchTab('bookings')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-white/60 transition duration-150 flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-indigo-600"></i> My Bookings &amp; OTPs
+                    </button>
+                </nav>
+
+                <div class="hidden lg:flex items-center gap-2 border-l border-slate-200 pl-4">
+                    <a href="/worker" class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-indigo-700 hover:bg-indigo-50 border border-slate-200/80 transition duration-150 flex items-center gap-1.5">
+                        <i data-lucide="wrench" class="w-3.5 h-3.5 text-indigo-600"></i> Worker Hub
+                    </a>
+                    <a href="/admin" class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-indigo-700 hover:bg-indigo-50 border border-slate-200/80 transition duration-150 flex items-center gap-1.5">
+                        <i data-lucide="shield" class="w-3.5 h-3.5 text-indigo-600"></i> Admin
+                    </a>
+                </div>
+
+                <!-- Auth Container -->
+                <div id="auth-btn-container" class="flex items-center gap-2"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Body Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-14">
+
+        <!-- ==================== VIEW 1: MARKETPLACE & SEARCH ==================== -->
+        <section id="view-marketplace" class="view-section space-y-14">
+            
+            <!-- Hero Banner with Modern Gradient & Atmospheric Glow -->
+            <div class="relative overflow-hidden rounded-3xl text-white p-8 md:p-14 lg:p-16 shadow-2xl border border-indigo-500/25"
+                 style="background: linear-gradient(135deg, rgba(10, 14, 26, 0.96) 0%, rgba(24, 21, 64, 0.92) 50%, rgba(55, 48, 163, 0.88) 100%), url('https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;">
+                
+                <!-- Ambient Glow Orbs -->
+                <div class="absolute -right-20 -bottom-20 w-[500px] h-[500px] bg-indigo-500/30 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -top-16 w-96 h-96 bg-violet-500/25 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute top-1/2 right-1/4 w-64 h-64 bg-cyan-500/15 rounded-full blur-2xl pointer-events-none"></div>
+                
+                <div class="relative z-10 max-w-3xl">
+                    <!-- Badges Row -->
+                    <div class="flex flex-wrap items-center gap-2.5 mb-5">
+                        <span class="inline-flex items-center gap-2 bg-indigo-950/85 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-indigo-200 border border-indigo-400/30 shadow-xs">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            Live Ahmedabad Dispatch (~24 Mins)
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 bg-emerald-950/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-emerald-300 border border-emerald-500/30">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+                            Two-Stage OTP Protected
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 bg-amber-950/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-amber-300 border border-amber-500/30">
+                            <i data-lucide="star" class="w-3.5 h-3.5 text-amber-400 fill-amber-400"></i>
+                            4.9 / 5.0 (3,400+ Homes)
+                        </span>
+                    </div>
+
+                    <!-- Main Headline -->
+                    <h2 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-white">
+                        Trusted Local Experts,<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-white to-amber-200">Dispatched in Minutes.</span>
+                    </h2>
+                    
+                    <p class="text-indigo-100/90 text-sm sm:text-base mt-4 leading-relaxed max-w-2xl font-normal">
+                        Book verified electricians, master plumbers, carpenters, AC specialists, and deep cleaners in Ahmedabad. Transparent upfront rates, zero hidden charges, and end-to-end OTP security.
+                    </p>
+
+                    <!-- Smart Search & Filter Box -->
+                    <div class="mt-8 p-3 bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 flex flex-col sm:flex-row items-center gap-2.5">
+                        <div class="flex-1 flex items-center gap-2.5 px-3 py-2 w-full bg-slate-50/90 rounded-2xl border border-slate-200/80 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-indigo-600 shrink-0"></i>
+                            <input type="text" id="search-locality-input" placeholder="Search locality (e.g. Vastrapur, Navrangpura, Satellite, Bodakdev)" class="w-full bg-transparent text-xs sm:text-sm font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none">
+                        </div>
+                        <div class="w-full sm:w-60">
+                            <select id="search-category-filter" class="w-full bg-slate-50/90 border border-slate-200/80 rounded-2xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition cursor-pointer"></select>
+                        </div>
+                        <button onclick="searchWorkers()" class="w-full sm:w-auto px-8 py-3.5 btn-brand-primary font-black text-xs rounded-2xl shadow-lg transition duration-150 flex items-center justify-center gap-2 shrink-0 cursor-pointer">
+                            <i data-lucide="search" class="w-4 h-4"></i> Find Verified Pros
+                        </button>
+                    </div>
+
+                    <!-- Quick Intent Chips -->
+                    <div class="flex flex-wrap items-center gap-2 mt-4 text-xs font-semibold text-indigo-200">
+                        <span class="text-slate-300 font-bold">Popular Issues:</span>
+                        <button onclick="setQuickSearch('Plumbing', 'Vastrapur')" class="px-3 py-1 rounded-xl bg-indigo-900/60 hover:bg-indigo-800/80 text-indigo-100 border border-indigo-700/50 transition cursor-pointer">🚰 Leaking Tap</button>
+                        <button onclick="setQuickSearch('Electrical', 'Navrangpura')" class="px-3 py-1 rounded-xl bg-indigo-900/60 hover:bg-indigo-800/80 text-indigo-100 border border-indigo-700/50 transition cursor-pointer">⚡ Short Circuit</button>
+                        <button onclick="setQuickSearch('AC & Appliance Repair', 'Bodakdev')" class="px-3 py-1 rounded-xl bg-indigo-900/60 hover:bg-indigo-800/80 text-indigo-100 border border-indigo-700/50 transition cursor-pointer">❄️ AC Jet Cleaning</button>
+                        <button onclick="setQuickSearch('Home Deep Cleaning', 'Satellite')" class="px-3 py-1 rounded-xl bg-indigo-900/60 hover:bg-indigo-800/80 text-indigo-100 border border-indigo-700/50 transition cursor-pointer">✨ 2BHK Deep Clean</button>
+                        <button onclick="setQuickSearch('Carpentry', 'Prahlad Nagar')" class="px-3 py-1 rounded-xl bg-indigo-900/60 hover:bg-indigo-800/80 text-indigo-100 border border-indigo-700/50 transition cursor-pointer">🪚 Door Lock Repair</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trust & Guarantee Metrics Bar -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="p-5 bg-white rounded-3xl border border-slate-200/80 shadow-xs flex items-center gap-4 hover-lift">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black shadow-inner">
+                        <i data-lucide="zap" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 font-semibold block">Average Dispatch</span>
+                        <strong class="text-base sm:text-lg font-black text-slate-900 font-tabular">~24 Mins</strong>
+                    </div>
+                </div>
+                <div class="p-5 bg-white rounded-3xl border border-slate-200/80 shadow-xs flex items-center gap-4 hover-lift">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black shadow-inner">
+                        <i data-lucide="badge-check" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 font-semibold block">Pro Verification</span>
+                        <strong class="text-base sm:text-lg font-black text-slate-900">100% Aadhaar / KYC</strong>
+                    </div>
+                </div>
+                <div class="p-5 bg-white rounded-3xl border border-slate-200/80 shadow-xs flex items-center gap-4 hover-lift">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-black shadow-inner">
+                        <i data-lucide="star" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 font-semibold block">Customer Rating</span>
+                        <strong class="text-base sm:text-lg font-black text-slate-900 font-tabular">4.9 / 5.0 (3.4k+)</strong>
+                    </div>
+                </div>
+                <div class="p-5 bg-white rounded-3xl border border-slate-200/80 shadow-xs flex items-center gap-4 hover-lift">
+                    <div class="w-12 h-12 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center font-black shadow-inner">
+                        <i data-lucide="lock" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 font-semibold block">Two-Stage Security</span>
+                        <strong class="text-base sm:text-lg font-black text-slate-900">Start &amp; End OTP</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Section -->
+            <div class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+                    <div>
+                        <div class="flex items-center gap-2 text-indigo-700 text-xs font-black uppercase tracking-widest">
+                            <i data-lucide="layers" class="w-4 h-4"></i> Standardized Rates &bull; Zero Hidden Costs
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">Explore Service Categories</h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">Select your domain to browse background-verified local specialists</p>
+                    </div>
+                    <span class="text-xs text-slate-400 font-bold hidden sm:block">Click any category card to filter nearby technicians</span>
+                </div>
+                <div id="category-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"></div>
+            </div>
+
+            <!-- ==================== NEW: INTERACTIVE SERVICE PRICE & TIME ESTIMATOR ==================== -->
+            <div class="p-8 sm:p-10 bg-gradient-to-br from-white via-indigo-50/30 to-white rounded-3xl border border-indigo-100 shadow-lg relative overflow-hidden">
+                <div class="max-w-2xl">
+                    <span class="text-[11px] font-black uppercase tracking-widest text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+                        ⚡ Instant Transparency Tool
+                    </span>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight mt-3">
+                        Instant Rate &amp; Duration Estimator
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
+                        Never guess repair charges. Tap your required service task below to view upfront labor rates, estimated completion times, and immediate dispatch availability.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8 items-center">
+                    <!-- Left: Selectable Task Chips -->
+                    <div class="lg:col-span-7 space-y-4">
+                        <div>
+                            <span class="text-xs font-black text-slate-800 uppercase tracking-wider block mb-2">1. Choose Service Domain</span>
+                            <div class="flex flex-wrap gap-2">
+                                <button type="button" onclick="selectEstimatorCategory('plumbing')" id="est-cat-plumbing" class="estimator-chip active">🚰 Plumbing</button>
+                                <button type="button" onclick="selectEstimatorCategory('electrical')" id="est-cat-electrical" class="estimator-chip">⚡ Electrical</button>
+                                <button type="button" onclick="selectEstimatorCategory('ac')" id="est-cat-ac" class="estimator-chip">❄️ AC Service</button>
+                                <button type="button" onclick="selectEstimatorCategory('cleaning')" id="est-cat-cleaning" class="estimator-chip">✨ Cleaning</button>
+                                <button type="button" onclick="selectEstimatorCategory('carpentry')" id="est-cat-carpentry" class="estimator-chip">🪚 Carpentry</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-xs font-black text-slate-800 uppercase tracking-wider block mb-2">2. Choose Specific Task</span>
+                            <div id="estimator-tasks-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <!-- Filled by JS below -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Computed Instant Estimate Card -->
+                    <div class="lg:col-span-5 bg-white p-6 sm:p-7 rounded-3xl border border-indigo-100 shadow-xl space-y-5">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                            <div>
+                                <span class="text-[10px] font-black uppercase tracking-wider text-indigo-600 block">Upfront Quote</span>
+                                <h4 id="est-task-name" class="font-black text-base text-slate-900 leading-tight">Leaking Tap / Pipe Repair</h4>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-black border border-emerald-200">Verified Rate</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                                <span class="text-slate-400 block text-[10px] font-bold uppercase">Estimated Time</span>
+                                <strong id="est-task-time" class="text-sm font-black text-slate-900 mt-0.5 block">25 – 35 Mins</strong>
+                            </div>
+                            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                                <span class="text-slate-400 block text-[10px] font-bold uppercase">Pro Arrival</span>
+                                <strong class="text-sm font-black text-indigo-600 mt-0.5 block">~24 Mins (Live)</strong>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-slate-500 block">Standard Labor &amp; Visit Fee</span>
+                                <span class="text-[10px] text-slate-400">Includes 30-day rework warranty</span>
+                            </div>
+                            <span id="est-task-price" class="text-2xl font-black text-indigo-700 font-tabular">₹299</span>
+                        </div>
+
+                        <button id="est-book-btn" onclick="bookFromEstimator()" class="w-full py-3.5 btn-brand-primary text-xs font-black rounded-2xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                            <i data-lucide="calendar-check" class="w-4 h-4"></i> Book This Service with 1-Click
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verified Workers Section -->
+            <div id="workers-section" class="space-y-6 pt-2">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <div class="flex items-center gap-2 text-emerald-700 text-xs font-black uppercase tracking-widest">
+                            <i data-lucide="user-check" class="w-4 h-4"></i> Top Rated Near You &bull; Active in Ahmedabad
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">Verified Nearby Professionals</h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">Instant on-demand dispatch or scheduled doorstep appointments</p>
+                    </div>
+                    <span class="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200/90 font-black px-4 py-2 rounded-full flex items-center gap-2 shadow-xs shrink-0 self-start sm:self-auto">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i> 100% Background &amp; Aadhaar Verified
+                    </span>
+                </div>
+                <div id="workers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+
+            <!-- How It Works Section: Two-Stage OTP Protocol -->
+            <div class="p-8 sm:p-12 bg-white rounded-3xl border border-slate-200/80 shadow-xs space-y-10">
+                <div class="text-center max-w-2xl mx-auto">
+                    <span class="text-xs font-black uppercase tracking-widest text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+                        Patent-Grade Safety Protocol
+                    </span>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight mt-3">How ServiceHub Protects Every Booking</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
+                        Unlike ordinary platforms where you pay upfront and wait, our Two-Stage OTP authorization ensures you never pay until the service is completed to your total satisfaction.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="p-6 rounded-2xl bg-slate-50/80 border border-slate-200/70 hover-lift relative space-y-3">
+                        <span class="w-9 h-9 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-md">1</span>
+                        <h4 class="font-black text-base text-slate-900">Book in 30 Seconds</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed font-medium">Select your service, choose a pro, and request immediate dispatch or schedule a preferred time slot.</p>
+                        <div class="pt-2 text-[11px] font-bold text-indigo-600 flex items-center gap-1">
+                            <i data-lucide="zap" class="w-3.5 h-3.5"></i> ~24 min response
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-slate-50/80 border border-slate-200/70 hover-lift relative space-y-3">
+                        <span class="w-9 h-9 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-md">2</span>
+                        <h4 class="font-black text-base text-slate-900">Pro Arrives &bull; Start OTP</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed font-medium">Technician arrives at your doorstep with verified ID badge. Share your 4-digit Start OTP to begin the job securely.</p>
+                        <div class="pt-2 text-[11px] font-bold text-emerald-600 flex items-center gap-1">
+                            <i data-lucide="lock" class="w-3.5 h-3.5"></i> Work begins securely
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-slate-50/80 border border-slate-200/70 hover-lift relative space-y-3">
+                        <span class="w-9 h-9 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-md">3</span>
+                        <h4 class="font-black text-base text-slate-900">Inspect &bull; End OTP</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed font-medium">Inspect the completed repair thoroughly. Only disclose your 4-digit End OTP once you are completely satisfied.</p>
+                        <div class="pt-2 text-[11px] font-bold text-purple-600 flex items-center gap-1">
+                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> 100% Quality guarantee
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-slate-50/80 border border-slate-200/70 hover-lift relative space-y-3">
+                        <span class="w-9 h-9 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-md">4</span>
+                        <h4 class="font-black text-base text-slate-900">Pay via QR / Cash &bull; Review</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed font-medium">Scan the integrated QR code using any UPI app or pay physical cash. Download instant GST tax invoice.</p>
+                        <div class="pt-2 text-[11px] font-bold text-amber-600 flex items-center gap-1">
+                            <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Instant tax invoice
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Community Activity Marquee Ticker -->
+            <div class="bg-slate-950 text-white rounded-3xl p-5 border border-slate-800 shadow-xl overflow-hidden">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Live Service Stream across Ahmedabad</span>
+                </div>
+                <div class="overflow-hidden relative">
+                    <div class="ticker-track flex items-center gap-8 text-xs font-mono py-1">
+                        <span class="text-slate-300">⚡ Ramesh M. completed plumbing in Vastrapur (4m ago) &bull; <strong class="text-amber-400">5.0 ⭐</strong></span>
+                        <span class="text-slate-500">|</span>
+                        <span class="text-slate-300">🔒 Start OTP verified for AC Jet Service in Bodakdev (~22m arrival)</span>
+                        <span class="text-slate-500">|</span>
+                        <span class="text-slate-300">✨ Priya K. booked 2BHK Deep Cleaning in Satellite &bull; ₹1,899</span>
+                        <span class="text-slate-500">|</span>
+                        <span class="text-slate-300">⚡ Mukesh E. dispatched for switchboard repair in Navrangpura</span>
+                        <span class="text-slate-500">|</span>
+                        <span class="text-slate-300">💳 QR Code payment of ₹350 settled for tap replacement in Prahlad Nagar</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================== VIEW 2: MY BOOKINGS & LIVE OTP TRACKER ==================== -->
+        <section id="view-bookings" class="view-section hidden space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-white rounded-3xl border border-slate-200/80 shadow-xs">
+                <div>
+                    <span class="text-xs font-black uppercase tracking-widest text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full">Live Service Tracker</span>
+                    <h2 class="text-2xl font-black text-slate-900 tracking-tight mt-1">My Service Bookings &amp; Live OTPs</h2>
+                    <p class="text-xs text-slate-500 mt-1">Track real-time technician arrival, reveal Start OTP upon doorstep arrival, and confirm completion</p>
+                </div>
+                <button onclick="loadMyBookings()" class="px-5 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-2xl text-xs font-bold transition flex items-center gap-2 cursor-pointer self-start sm:self-auto">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh Status
+                </button>
+            </div>
+
+            <!-- Bookings List Container -->
+            <div id="my-bookings-container" class="space-y-4"></div>
+        </section>
+
+    </main>
+
+    <!-- ==================== GLOBAL FOOTER ==================== -->
+    <footer class="bg-white border-t border-slate-200/80 py-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-slate-100">
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black shadow-md">
+                            <i data-lucide="shield-check" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-black text-sm text-slate-900">ServiceHub Pro</h4>
+                            <span class="text-[11px] text-slate-400 font-medium">Hyperlocal Marketplace</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 leading-relaxed pr-4">
+                        Connecting households with verified, police-cleared service technicians in ~24 minutes. Built with Two-Stage OTP security and zero hidden pricing.
+                    </p>
+                </div>
+
+                <div>
+                    <h5 class="text-xs font-black text-slate-900 uppercase tracking-wider mb-3">Popular Services</h5>
+                    <ul class="text-xs space-y-2 text-slate-600 font-medium">
+                        <li><a href="javascript:void(0)" onclick="setQuickSearch('Plumbing', 'Vastrapur')" class="hover:text-indigo-600">Plumbing &amp; Leakage</a></li>
+                        <li><a href="javascript:void(0)" onclick="setQuickSearch('Electrical', 'Navrangpura')" class="hover:text-indigo-600">Electrical Repairs</a></li>
+                        <li><a href="javascript:void(0)" onclick="setQuickSearch('AC & Appliance Repair', 'Bodakdev')" class="hover:text-indigo-600">AC Servicing &amp; Gas Refill</a></li>
+                        <li><a href="javascript:void(0)" onclick="setQuickSearch('Home Deep Cleaning', 'Satellite')" class="hover:text-indigo-600">Deep Cleaning &amp; Disinfection</a></li>
+                        <li><a href="javascript:void(0)" onclick="setQuickSearch('Carpentry', 'Prahlad Nagar')" class="hover:text-indigo-600">Carpentry &amp; Furniture Fix</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h5 class="text-xs font-black text-slate-900 uppercase tracking-wider mb-3">Coverage Localities</h5>
+                    <ul class="text-xs space-y-2 text-slate-600 font-medium">
+                        <li><span>Navrangpura &bull; CG Road</span></li>
+                        <li><span>Vastrapur &bull; Gurukul</span></li>
+                        <li><span>Satellite &bull; Prahlad Nagar</span></li>
+                        <li><span>Bodakdev &bull; SG Highway</span></li>
+                        <li><span>Thaltej &bull; Science City</span></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h5 class="text-xs font-black text-slate-900 uppercase tracking-wider mb-3">Support &amp; Trust</h5>
+                    <div class="space-y-2 text-xs text-slate-600">
+                        <p class="flex items-center gap-2">
+                            <i data-lucide="phone" class="w-3.5 h-3.5 text-indigo-600"></i>
+                            <span>1800-SERVICE (Toll Free)</span>
+                        </p>
+                        <p class="flex items-center gap-2">
+                            <i data-lucide="mail" class="w-3.5 h-3.5 text-indigo-600"></i>
+                            <span>support@servicehub.com</span>
+                        </p>
+                        <p class="flex items-center gap-2">
+                            <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-600"></i>
+                            <span>100% Satisfaction Rework Guarantee</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-xs text-slate-400">
+                <p>&copy; 2026 ServiceHub Inc. All rights reserved. Two-Stage OTP Security Protocol.</p>
+                <div class="flex items-center gap-4 font-semibold text-slate-500">
+                    <a href="/worker" class="hover:text-indigo-600">Worker Console</a>
+                    <span>&bull;</span>
+                    <a href="/admin" class="hover:text-indigo-600">Admin Governance</a>
+                    <span>&bull;</span>
+                    <a href="/docs" target="_blank" class="hover:text-indigo-600">OpenAPI Docs</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- 1. Booking Modal -->
+    <div id="booking-modal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto border border-slate-200">
+            <button onclick="closeBookingModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 cursor-pointer">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <span class="text-[10px] font-extrabold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full uppercase tracking-wider">Instant Service Dispatch</span>
+            <h3 class="text-xl font-black text-slate-900 mt-2">Book Service Professional</h3>
+            
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 mt-4 flex items-center justify-between text-xs">
+                <div>
+                    <h5 id="book-worker-name" class="font-extrabold text-slate-900 text-sm">Ramesh Mistri</h5>
+                    <span id="book-worker-cat" class="text-slate-500 font-semibold">Plumbing Services</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-slate-400 block text-[10px]">Estimated Inspection</span>
+                    <span id="book-worker-rate" class="font-black text-emerald-700 text-base font-tabular">₹350</span>
+                </div>
+            </div>
+
+            <form onsubmit="handleBookingSubmit(event)" class="mt-4 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Your Street / Flat Address</label>
+                    <textarea id="book-address" rows="2" placeholder="e.g. Flat 302, Shivalik Residency, Vastrapur" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Locality / Landmark</label>
+                    <input type="text" id="book-locality" placeholder="e.g. Vastrapur / Satellite" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Describe Problem</label>
+                    <textarea id="book-problem" rows="2" placeholder="e.g. Heavy tap leakage under sink, water leaking onto floor" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                </div>
+
+                <div class="p-3.5 bg-indigo-50/70 rounded-2xl border border-indigo-100 flex items-center gap-3">
+                    <input type="radio" id="book-type-instant" name="book-timing" checked class="w-4 h-4 text-indigo-600 accent-indigo-600">
+                    <label for="book-type-instant" class="text-xs font-bold text-indigo-950 cursor-pointer">
+                        ⚡ Instant Dispatch (Pro dispatched immediately, ~24 mins arrival)
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 btn-brand-primary text-white font-extrabold text-xs rounded-2xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i> Confirm Booking &amp; Notify Pro
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Review Modal -->
+    <div id="review-modal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative border border-slate-200">
+            <button onclick="closeReviewModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <span class="text-[10px] font-extrabold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full uppercase tracking-wider">Service Completed</span>
+            <h3 class="text-xl font-black text-slate-900 mt-2">Rate &amp; Review Service</h3>
+            <p class="text-xs text-slate-500 mt-1">How was your service experience with <strong id="review-worker-name" class="text-slate-800">the technician</strong>?</p>
+
+            <form onsubmit="handleReviewSubmit(event)" class="mt-5 space-y-4">
+                <input type="hidden" id="review-booking-id">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Your Rating</label>
+                    <select id="review-rating-val" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold text-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="5">⭐⭐⭐⭐⭐ 5 Stars (Outstanding Service)</option>
+                        <option value="4">⭐⭐⭐⭐ 4 Stars (Good &amp; Professional)</option>
+                        <option value="3">⭐⭐⭐ 3 Stars (Average)</option>
+                        <option value="2">⭐⭐ 2 Stars (Below Expectations)</option>
+                        <option value="1">⭐ 1 Star (Unsatisfactory)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Feedback &amp; Comments</label>
+                    <textarea id="review-text" rows="3" placeholder="Explain the technician's punctuality, repair quality, and behavior..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-amber-500/25 transition cursor-pointer">
+                    Submit Verified Review
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. Payment Modal with QR Scanner -->
+    <div id="payment-modal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative border border-slate-200 my-auto">
+            <button onclick="closePaymentModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 cursor-pointer">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Work Verified
+                </span>
+                <span class="text-xs text-slate-400 font-bold" id="pay-modal-ref">REF-000000</span>
+            </div>
+            
+            <h3 class="text-2xl font-black text-slate-900 tracking-tight">Settle Service Bill</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Payment is released to your verified technician upon completion.</p>
+
+            <!-- Bill Breakdown Summary Card -->
+            <div class="mt-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-600 font-semibold" id="pay-modal-service-desc">Plumbing Repair with Ramesh Mistri</span>
+                    <span class="font-black text-slate-900 font-tabular" id="pay-modal-base-price">₹350.00</span>
+                </div>
+                <div class="flex items-center justify-between text-xs text-slate-500">
+                    <span>Platform Safety &amp; Guarantee Fee</span>
+                    <span class="text-emerald-600 font-bold">FREE</span>
+                </div>
+                <div class="pt-2 border-t border-slate-200 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-black text-slate-900 block leading-tight">Total Amount Payable</span>
+                        <span class="text-[10px] text-slate-400 font-medium">All local taxes &amp; visit fees included</span>
+                    </div>
+                    <span class="text-2xl font-black text-indigo-600 font-tabular" id="pay-modal-total-price">₹350</span>
+                </div>
+            </div>
+
+            <!-- Payment Method Navigation Tabs -->
+            <div class="mt-5">
+                <label class="block text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-2.5">Choose Payment Method</label>
+                <div class="grid grid-cols-4 gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200 text-center text-xs font-bold">
+                    <button type="button" onclick="selectPayTab('upi')" id="tab-btn-upi" class="py-2.5 rounded-xl transition duration-150 bg-white text-indigo-700 shadow-xs cursor-pointer flex flex-col items-center gap-1">
+                        <i data-lucide="qr-code" class="w-4 h-4"></i>
+                        <span class="text-[11px]">UPI / QR</span>
+                    </button>
+                    <button type="button" onclick="selectPayTab('card')" id="tab-btn-card" class="py-2.5 rounded-xl transition duration-150 text-slate-600 hover:text-slate-900 cursor-pointer flex flex-col items-center gap-1">
+                        <i data-lucide="credit-card" class="w-4 h-4"></i>
+                        <span class="text-[11px]">Cards</span>
+                    </button>
+                    <button type="button" onclick="selectPayTab('netbanking')" id="tab-btn-netbanking" class="py-2.5 rounded-xl transition duration-150 text-slate-600 hover:text-slate-900 cursor-pointer flex flex-col items-center gap-1">
+                        <i data-lucide="landmark" class="w-4 h-4"></i>
+                        <span class="text-[11px]">Net Banking</span>
+                    </button>
+                    <button type="button" onclick="selectPayTab('cash')" id="tab-btn-cash" class="py-2.5 rounded-xl transition duration-150 text-slate-600 hover:text-slate-900 cursor-pointer flex flex-col items-center gap-1">
+                        <i data-lucide="banknote" class="w-4 h-4"></i>
+                        <span class="text-[11px]">Cash to Pro</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Content 1: UPI / QR SCANNER -->
+            <div id="pay-content-upi" class="pay-tab-content mt-4 space-y-4">
+                <!-- Scanner View Switcher & Custom QR Upload -->
+                <div class="flex items-center justify-between px-1">
+                    <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-[11px] font-bold">
+                        <button type="button" id="btn-show-qr" onclick="toggleScannerMode('qr')" class="px-2.5 py-1 bg-white text-indigo-700 rounded-lg shadow-xs cursor-pointer flex items-center gap-1">
+                            <i data-lucide="qr-code" class="w-3 h-3"></i> Display QR
+                        </button>
+                        <button type="button" id="btn-show-camera" onclick="toggleScannerMode('camera')" class="px-2.5 py-1 text-slate-600 hover:text-slate-900 rounded-lg cursor-pointer flex items-center gap-1">
+                            <i data-lucide="camera" class="w-3 h-3"></i> Camera Scanner
+                        </button>
+                    </div>
+
+                    <div>
+                        <input type="file" id="custom-qr-input" accept="image/*" class="hidden" onchange="handleQrFileChange(event)">
+                        <button type="button" onclick="document.getElementById('custom-qr-input').click()" class="text-[11px] text-indigo-600 hover:text-indigo-800 font-extrabold flex items-center gap-1 bg-indigo-50 px-2.5 py-1.5 rounded-xl border border-indigo-200 transition cursor-pointer">
+                            <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i>
+                            <span>Upload My QR</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 1. Display QR Code Standee Frame -->
+                <div id="qr-standee-view" class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex flex-col items-center text-center relative overflow-hidden">
+                    <div class="p-3 bg-white rounded-2xl shadow-md border border-slate-200 relative group">
+                        <div class="relative w-44 h-44 bg-slate-950 p-2 rounded-xl flex items-center justify-center overflow-hidden border border-slate-800">
+                            <!-- Laser Scanning Line Animation -->
+                            <div class="scanner-laser"></div>
+                            
+                            <!-- 4 Corner Target Guides -->
+                            <div class="qr-target-corner top-1.5 left-1.5 border-t-2 border-l-2 border-indigo-400 rounded-tl"></div>
+                            <div class="qr-target-corner top-1.5 right-1.5 border-t-2 border-r-2 border-indigo-400 rounded-tr"></div>
+                            <div class="qr-target-corner bottom-1.5 left-1.5 border-b-2 border-l-2 border-indigo-400 rounded-bl"></div>
+                            <div class="qr-target-corner bottom-1.5 right-1.5 border-b-2 border-r-2 border-indigo-400 rounded-br"></div>
+
+                            <!-- Real Image QR Code -->
+                            <img id="merchant-qr-image" src="/static/images/payment_qr.png?v=1" alt="Scan to Pay QR Code" class="w-full h-full object-contain rounded-lg bg-white p-1">
+                        </div>
+                    </div>
+
+                    <div class="mt-2.5">
+                        <span class="text-xs font-black text-indigo-950 block">Scan this QR with any UPI App</span>
+                        <div class="flex items-center justify-center gap-2 mt-1">
+                            <span class="text-xl font-black text-indigo-700 font-tabular" id="qr-amount-preview">₹350</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">Live UPI Active</span>
+                        </div>
+                    </div>
+
+                    <!-- UPI ID with Copy -->
+                    <div class="flex items-center gap-2 mt-2">
+                        <code id="display-upi-id" class="text-[11px] font-mono font-bold bg-white px-2.5 py-1 rounded-md border border-indigo-200 text-indigo-700">servicehub.pay@oksbi</code>
+                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('display-upi-id').innerText); showToast('UPI ID copied!')" class="px-2 py-1 bg-white hover:bg-indigo-50 border border-indigo-200 text-indigo-600 rounded-md text-[10px] font-bold cursor-pointer transition">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. Interactive Camera View (When Camera Scanner is active) -->
+                <div id="camera-scanner-view" class="hidden p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col items-center text-center relative overflow-hidden">
+                    <div class="relative w-48 h-48 bg-black rounded-xl overflow-hidden border-2 border-indigo-500 shadow-inner flex items-center justify-center">
+                        <div class="scanner-laser"></div>
+                        <div class="qr-target-corner top-2 left-2 border-t-2 border-l-2 border-emerald-400 rounded-tl"></div>
+                        <div class="qr-target-corner top-2 right-2 border-t-2 border-r-2 border-emerald-400 rounded-tr"></div>
+                        <div class="qr-target-corner bottom-2 left-2 border-b-2 border-l-2 border-emerald-400 rounded-bl"></div>
+                        <div class="qr-target-corner bottom-2 right-2 border-b-2 border-r-2 border-emerald-400 rounded-br"></div>
+                        <video id="camera-stream-video" autoplay playsinline class="w-full h-full object-cover"></video>
+                    </div>
+                    <p class="text-xs text-slate-300 font-bold mt-2">Point camera at QR code on another phone or printed card</p>
+                    <button type="button" onclick="stopCameraScanner(); toggleScannerMode('qr')" class="mt-2 px-3 py-1 bg-slate-800 text-slate-300 hover:text-white rounded-lg text-xs font-semibold">
+                        Close Camera
+                    </button>
+                </div>
+
+                <!-- Supported Apps Quick Selection -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Supported UPI Applications</label>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button type="button" onclick="setUpiApp('Google Pay')" class="upi-app-btn p-2 rounded-xl border border-slate-200 hover:border-indigo-500 bg-slate-50 text-center text-xs font-bold text-slate-700 transition cursor-pointer">
+                            <span class="block text-[14px]">🔵</span> GPay
+                        </button>
+                        <button type="button" onclick="setUpiApp('PhonePe')" class="upi-app-btn p-2 rounded-xl border border-slate-200 hover:border-indigo-500 bg-slate-50 text-center text-xs font-bold text-slate-700 transition cursor-pointer">
+                            <span class="block text-[14px]">🟣</span> PhonePe
+                        </button>
+                        <button type="button" onclick="setUpiApp('Paytm')" class="upi-app-btn p-2 rounded-xl border border-slate-200 hover:border-indigo-500 bg-slate-50 text-center text-xs font-bold text-slate-700 transition cursor-pointer">
+                            <span class="block text-[14px]">🔷</span> Paytm
+                        </button>
+                        <button type="button" onclick="setUpiApp('BHIM UPI')" class="upi-app-btn p-2 rounded-xl border border-slate-200 hover:border-indigo-500 bg-slate-50 text-center text-xs font-bold text-slate-700 transition cursor-pointer">
+                            <span class="block text-[14px]">🟢</span> BHIM
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 12-Digit UTR / UPI Transaction Reference Entry -->
+                <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/90 space-y-1.5">
+                    <label class="block text-xs font-extrabold text-slate-800">
+                        Enter 12-Digit UPI Ref / UTR Number
+                    </label>
+                    <input type="text" id="upi-utr-input" maxlength="16" placeholder="e.g. 428190348123 (from Google Pay / PhonePe)" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <p class="text-[10px] text-slate-500 leading-tight">
+                        Check your UPI app receipt for the 12-digit UTR / Transaction ID after sending payment.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tab Content 2: Debit / Credit Cards -->
+            <div id="pay-content-card" class="pay-tab-content hidden mt-4 space-y-3.5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Card Number</label>
+                    <div class="relative">
+                        <input type="text" id="card-number-input" maxlength="19" placeholder="4532 •••• •••• 8912" value="4532 8921 7341 8912" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold tracking-wider focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <span class="absolute right-3 top-2.5 text-xs font-black text-slate-400">VISA / MC</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Expiry Date</label>
+                        <input type="text" id="card-expiry-input" maxlength="5" placeholder="MM/YY" value="08/29" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono font-bold text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">CVV Security</label>
+                        <input type="password" id="card-cvv-input" maxlength="3" placeholder="•••" value="821" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono font-bold text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Cardholder Name</label>
+                    <input type="text" id="card-name-input" placeholder="Name as on card" value="Rahul Sharma" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="flex items-center gap-2 text-[11px] text-slate-500 pt-1">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                    <span>256-Bit Encrypted &amp; RBI Guideline Compliant</span>
+                </div>
+            </div>
+
+            <!-- Tab Content 3: Net Banking -->
+            <div id="pay-content-netbanking" class="pay-tab-content hidden mt-4 space-y-3">
+                <label class="block text-xs font-bold text-slate-700">Select Bank</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button type="button" onclick="setBank('State Bank of India')" class="bank-btn p-3 rounded-xl border border-slate-200 hover:border-indigo-500 bg-slate-50 text-center text-xs font-bold text-slate-800 transition cursor-pointer">
+                        🏛️ SBI
+                    </button>
+                    <button type="button" onclick="setBank('HDFC Bank')" class="bank-btn p-3 rounded-xl border border-slate-200 hover:border-indigo-500 bg-slate-50 text-center text-xs font-bold text-slate-800 transition cursor-pointer">
+                        🏛️ HDFC
+                    </button>
+                    <button type="button" onclick="setBank('ICICI Bank')" class="bank-btn p-3 rounded-xl border border-slate-200 hover:border-indigo-500 bg-slate-50 text-center text-xs font-bold text-slate-800 transition cursor-pointer">
+                        🏛️ ICICI
+                    </button>
+                    <button type="button" onclick="setBank('Axis Bank')" class="bank-btn p-3 rounded-xl border border-slate-200 hover:border-indigo-500 bg-slate-50 text-center text-xs font-bold text-slate-800 transition cursor-pointer">
+                        🏛️ Axis
+                    </button>
+                    <button type="button" onclick="setBank('Kotak Mahindra')" class="bank-btn p-3 rounded-xl border border-slate-200 hover:border-indigo-500 bg-slate-50 text-center text-xs font-bold text-slate-800 transition cursor-pointer">
+                        🏛️ Kotak
+                    </button>
+                    <button type="button" onclick="setBank('Punjab National Bank')" class="bank-btn p-3 rounded-xl border border-slate-200 hover:border-indigo-500 bg-slate-50 text-center text-xs font-bold text-slate-800 transition cursor-pointer">
+                        🏛️ PNB
+                    </button>
+                </div>
+                <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-center gap-2">
+                    <i data-lucide="info" class="w-4 h-4 text-amber-700 shrink-0"></i>
+                    <span>You will be securely redirected to your bank's net banking login portal.</span>
+                </div>
+            </div>
+
+            <!-- Tab Content 4: Cash to Pro -->
+            <div id="pay-content-cash" class="pay-tab-content hidden mt-4 space-y-3">
+                <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200/80 space-y-2">
+                    <div class="flex items-center gap-2 text-amber-900 font-extrabold text-xs">
+                        <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600"></i>
+                        <span>Cash on Service Protocol</span>
+                    </div>
+                    <p class="text-xs text-amber-800 leading-relaxed">
+                        Hand over exact cash of <strong class="text-amber-950 font-tabular font-black" id="cash-amount-label">₹350</strong> directly to the technician.
+                    </p>
+                </div>
+                <label class="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 font-semibold cursor-pointer">
+                    <input type="checkbox" id="cash-confirm-check" checked class="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500">
+                    <span>I confirm I am paying physical cash to the assigned technician for this service.</span>
+                </label>
+            </div>
+
+            <!-- Submit Payment Action -->
+            <div class="mt-6">
+                <button type="button" id="pay-action-btn" onclick="executePayment()" class="w-full py-3.5 btn-brand-primary text-white font-black text-xs sm:text-sm rounded-2xl shadow-xl transition flex items-center justify-center gap-2 cursor-pointer">
+                    <i data-lucide="lock" class="w-4 h-4"></i>
+                    <span>Confirm &amp; Pay <span id="pay-btn-label-amount">₹350</span></span>
+                </button>
+            </div>
+            
+            <p class="text-center text-[10px] text-slate-400 mt-3 flex items-center justify-center gap-1.5">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500"></i>
+                <span>100% Buyer Protection &bull; Dispute-Free Resolution</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- 4. Tax Invoice / Receipt Modal -->
+    <div id="receipt-modal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative border border-slate-200 my-auto text-slate-900">
+            <button onclick="closeReceiptModal()" class="no-print absolute top-5 right-5 text-slate-400 hover:text-slate-600 cursor-pointer">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Invoice Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md">
+                        <i data-lucide="shield-check" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-black text-slate-950 text-base leading-tight">ServiceHub</h4>
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Official Tax Invoice</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="inline-block px-2.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-md text-[10px] font-black uppercase tracking-wider">PAID &amp; SETTLED</span>
+                    <span class="block text-xs font-mono font-bold text-slate-400 mt-0.5" id="receipt-inv-num">INV-2026-0001</span>
+                </div>
+            </div>
+
+            <!-- Billed Details -->
+            <div class="grid grid-cols-2 gap-4 py-4 border-b border-slate-100 text-xs">
+                <div>
+                    <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Billed To (Customer):</span>
+                    <span class="font-black text-slate-900 block mt-0.5" id="receipt-cust-name">Rahul Sharma</span>
+                    <span class="text-slate-500 block text-[11px]" id="receipt-cust-phone">9876543210</span>
+                    <span class="text-slate-500 block text-[11px] truncate max-w-[200px]" id="receipt-cust-addr">Vastrapur, Ahmedabad</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Verified Pro:</span>
+                    <span class="font-black text-slate-900 block mt-0.5" id="receipt-worker-name">Ramesh Mistri</span>
+                    <span class="text-indigo-600 font-bold block text-[11px]" id="receipt-category-name">Plumbing Services</span>
+                    <span class="text-slate-400 block text-[11px]" id="receipt-date">24 Sep 2026</span>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <div class="py-4 border-b border-slate-100">
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="text-slate-400 font-bold border-b border-slate-100 pb-1 text-[10px] uppercase">
+                            <th class="text-left pb-2">Description</th>
+                            <th class="text-right pb-2">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50 font-medium">
+                        <tr>
+                            <td class="py-2.5">
+                                <span class="font-bold text-slate-900 block" id="receipt-service-title">Standard Service Visit &amp; Repair</span>
+                                <span class="text-[10px] text-slate-400">Verified via Two-Stage OTP (Start + End)</span>
+                            </td>
+                            <td class="py-2.5 text-right font-black text-slate-900 font-tabular" id="receipt-base-amount">₹350.00</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 text-slate-500">Safety &amp; Verification Charge</td>
+                            <td class="py-2 text-right font-bold text-emerald-600">₹0.00</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 text-slate-500">CGST (9%) + SGST (9%)</td>
+                            <td class="py-2 text-right font-bold text-slate-500">Included</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Total & Payment Method -->
+            <div class="pt-4 flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Payment Mode:</span>
+                    <span class="text-xs font-extrabold text-indigo-700" id="receipt-pay-method">UPI (Google Pay)</span>
+                    <span class="block text-[10px] font-mono text-slate-400" id="receipt-txn-ref">TXN-SH-984210</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Total Amount Paid:</span>
+                    <span class="text-2xl font-black text-emerald-600 font-tabular" id="receipt-total-amount">₹350</span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-end gap-2.5 no-print">
+                <button type="button" onclick="window.print()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition flex items-center gap-1.5 cursor-pointer">
+                    <i data-lucide="printer" class="w-4 h-4"></i> Print Receipt
+                </button>
+                <button type="button" onclick="closeReceiptModal()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-xl shadow-md transition cursor-pointer">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Login Modal -->
+    <div id="login-modal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative border border-slate-200">
+            <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <span class="text-[10px] font-extrabold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full uppercase tracking-wider">Welcome Back</span>
+            <h3 class="text-2xl font-black text-slate-900 mt-2">Sign In to ServiceHub</h3>
+            <p class="text-xs text-slate-500 mt-1">Access your bookings, track live OTPs, and rate pros.</p>
+
+            <form onsubmit="handleLoginSubmit(event)" class="mt-5 space-y-3.5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+                    <input type="email" id="login-email" value="rahul@gmail.com" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+                    <input type="password" id="login-password" value="Rahul@123" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="p-3 bg-indigo-50/80 rounded-2xl border border-indigo-100 text-[11px] text-indigo-950 space-y-1">
+                    <strong class="block text-indigo-900 font-extrabold">Quick Demo Accounts:</strong>
+                    <div class="flex flex-wrap gap-1.5 mt-1">
+                        <button type="button" onclick="fillDemo('rahul@gmail.com', 'Rahul@123')" class="px-2 py-0.5 bg-white text-indigo-700 rounded-md border border-indigo-200 font-bold hover:bg-indigo-100">Customer (Rahul)</button>
+                        <button type="button" onclick="fillDemo('ramesh.plumber@servicehub.com', 'Worker@123')" class="px-2 py-0.5 bg-white text-indigo-700 rounded-md border border-indigo-200 font-bold hover:bg-indigo-100">Plumber (Ramesh)</button>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3.5 btn-brand-primary text-white font-extrabold text-xs rounded-2xl shadow-lg transition cursor-pointer">
+                    Sign In
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 6. Register Modal -->
+    <div id="register-modal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative border border-slate-200">
+            <button onclick="closeRegisterModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <span class="text-[10px] font-extrabold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full uppercase tracking-wider">New User</span>
+            <h3 class="text-2xl font-black text-slate-900 mt-2">Create Customer Account</h3>
+            <p class="text-xs text-slate-500 mt-1">Join thousands of households getting instant verified home repairs.</p>
+
+            <form onsubmit="handleRegisterSubmit(event)" class="mt-5 space-y-3.5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+                    <input type="text" id="reg-name" placeholder="e.g. Rahul Sharma" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+                    <input type="email" id="reg-email" placeholder="e.g. rahul@example.com" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
+                    <input type="tel" id="reg-phone" placeholder="e.g. 9876543210" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+                    <input type="password" id="reg-password" placeholder="••••••••" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <button type="submit" class="w-full py-3.5 btn-brand-primary text-white font-extrabold text-xs rounded-2xl shadow-lg transition cursor-pointer">
+                    Register Customer Account
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/app.js"></script>
+    <script>
+        // Quick Intent Search Pre-filler
+        function setQuickSearch(categoryName, locality) {
+            const locInput = document.getElementById("search-locality-input");
+            if (locInput) locInput.value = locality;
+            const select = document.getElementById("search-category-filter");
+            if (select) {
+                for (let i = 0; i < select.options.length; i++) {
+                    if (select.options[i].text.toLowerCase().includes(categoryName.toLowerCase())) {
+                        select.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            searchWorkers();
+            document.getElementById("workers-section")?.scrollIntoView({ behavior: "smooth" });
+        }
+
+        // Quick Demo Accounts Fill
+        function fillDemo(email, pass) {
+            const e = document.getElementById("login-email");
+            const p = document.getElementById("login-password");
+            if (e && p) {
+                e.value = email;
+                p.value = pass;
+            }
+        }
+
+        // =====================================================================
+        // Interactive Service Price & Duration Estimator Engine
+        // =====================================================================
+        const ESTIMATOR_DATA = {
+            plumbing: [
+                { name: "Leaking Tap / Pipe Repair", price: 299, time: "25 – 35 Mins", catName: "Plumbing" },
+                { name: "Drain / Sink Unclogging", price: 449, time: "40 – 55 Mins", catName: "Plumbing" },
+                { name: "Toilet Flush / Cistern Repair", price: 499, time: "45 – 60 Mins", catName: "Plumbing" },
+                { name: "Water Heater / Geyser Piping", price: 699, time: "60 – 90 Mins", catName: "Plumbing" }
+            ],
+            electrical: [
+                { name: "Switchboard / Socket Repair", price: 249, time: "20 – 30 Mins", catName: "Electrical" },
+                { name: "Ceiling Fan Installation", price: 349, time: "30 – 45 Mins", catName: "Electrical" },
+                { name: "MCB Trip / Short Circuit Diagnostic", price: 549, time: "40 – 60 Mins", catName: "Electrical" },
+                { name: "Inverter / Battery Wiring", price: 799, time: "60 – 90 Mins", catName: "Electrical" }
+            ],
+            ac: [
+                { name: "AC Jet Power Wash Servicing", price: 599, time: "40 – 50 Mins", catName: "AC & Appliance Repair" },
+                { name: "AC Gas Top-Up & Cooling Fix", price: 1499, time: "60 – 80 Mins", catName: "AC & Appliance Repair" },
+                { name: "Water Leakage & Drainage Clear", price: 449, time: "35 – 50 Mins", catName: "AC & Appliance Repair" },
+                { name: "Split AC PCB Electrical Repair", price: 899, time: "50 – 75 Mins", catName: "AC & Appliance Repair" }
+            ],
+            cleaning: [
+                { name: "Full Bathroom Deep Sanitization", price: 599, time: "60 – 90 Mins", catName: "Home Deep Cleaning" },
+                { name: "Modular Kitchen Degreasing", price: 899, time: "90 – 120 Mins", catName: "Home Deep Cleaning" },
+                { name: "Sofa 5-Seater Shampoo Cleaning", price: 699, time: "60 – 80 Mins", catName: "Home Deep Cleaning" },
+                { name: "Full Home 2BHK Deep Cleaning", price: 2499, time: "3 – 4 Hours", catName: "Home Deep Cleaning" }
+            ],
+            carpentry: [
+                { name: "Door Lock / Latch Replacement", price: 349, time: "30 – 45 Mins", catName: "Carpentry" },
+                { name: "Cabinet Hinge & Drawer Realignment", price: 299, time: "25 – 40 Mins", catName: "Carpentry" },
+                { name: "Bed / Furniture Disassembly & Assembly", price: 599, time: "60 – 90 Mins", catName: "Carpentry" },
+                { name: "Window Mesh Screen Installation", price: 449, time: "40 – 60 Mins", catName: "Carpentry" }
+            ]
+        };
+
+        let currentEstCategory = 'plumbing';
+        let currentEstTask = ESTIMATOR_DATA.plumbing[0];
+
+        function selectEstimatorCategory(catKey) {
+            currentEstCategory = catKey;
+            document.querySelectorAll(".estimator-chip").forEach(c => c.classList.remove("active"));
+            const activeBtn = document.getElementById(`est-cat-${catKey}`);
+            if (activeBtn) activeBtn.classList.add("active");
+
+            renderEstimatorTasks();
+        }
+
+        function renderEstimatorTasks() {
+            const container = document.getElementById("estimator-tasks-container");
+            if (!container) return;
+
+            const list = ESTIMATOR_DATA[currentEstCategory] || [];
+            currentEstTask = list[0];
+
+            container.innerHTML = list.map((task, idx) => `
+                <div onclick="selectEstimatorTask(${idx})" class="est-task-card p-3 rounded-2xl border ${idx === 0 ? 'border-indigo-600 bg-indigo-50/70' : 'border-slate-200/90 bg-white'} hover:border-indigo-400 cursor-pointer transition flex items-center justify-between text-xs" data-task-idx="${idx}">
+                    <span class="font-bold text-slate-800">${task.name}</span>
+                    <span class="font-black text-indigo-700 font-tabular ml-2">₹${task.price}</span>
+                </div>
+            `).join("");
+
+            updateEstimatorDisplay();
+        }
+
+        function selectEstimatorTask(idx) {
+            const list = ESTIMATOR_DATA[currentEstCategory] || [];
+            currentEstTask = list[idx] || list[0];
+
+            document.querySelectorAll(".est-task-card").forEach((card, i) => {
+                if (i === idx) {
+                    card.classList.add("border-indigo-600", "bg-indigo-50/70");
+                    card.classList.remove("border-slate-200/90", "bg-white");
+                } else {
+                    card.classList.remove("border-indigo-600", "bg-indigo-50/70");
+                    card.classList.add("border-slate-200/90", "bg-white");
+                }
+            });
+
+            updateEstimatorDisplay();
+        }
+
+        function updateEstimatorDisplay() {
+            if (!currentEstTask) return;
+            const nameEl = document.getElementById("est-task-name");
+            const timeEl = document.getElementById("est-task-time");
+            const priceEl = document.getElementById("est-task-price");
+
+            if (nameEl) nameEl.textContent = currentEstTask.name;
+            if (timeEl) timeEl.textContent = currentEstTask.time;
+            if (priceEl) priceEl.textContent = `₹${currentEstTask.price}`;
+        }
+
+        function bookFromEstimator() {
+            if (!currentEstTask) return;
+            setQuickSearch(currentEstTask.catName, 'Vastrapur');
+            showToast(`Searching top rated pros for "${currentEstTask.name}"...`);
+        }
+
+        // Initialize estimator on load
+        renderEstimatorTasks();
+
+        if (window.lucide) lucide.createIcons();
+    </script>
+</body>
+</html>

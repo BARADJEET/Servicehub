@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  servicehub:
+    build: .
+    container_name: servicehub_app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./backend/servicehub.db
+      - SECRET_KEY=servicehub-secret-key-2026
+    volumes:
+      - ./backend/uploads:/app/backend/uploads
+    restart: unless-stopped

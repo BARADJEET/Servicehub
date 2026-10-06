@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Onboarding & Dispatch Console | ServiceHub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                            950: '#1e1b4b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        mono: ['"Inter"', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased min-h-screen flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+
+    <!-- Worker Top Header -->
+    <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
+                    <i data-lucide="wrench" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base sm:text-lg font-black tracking-tight text-white leading-none">ServiceHub Worker Hub</h1>
+                        <span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-emerald-500/30 uppercase tracking-wider flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live Radar
+                        </span>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">On-Site Dispatch & Two-Stage OTP Engine</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <a href="/" class="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 px-3 py-2 rounded-xl border border-slate-700/60 transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4 text-indigo-400"></i> Marketplace
+                </a>
+                <span id="worker-display-name" class="text-xs text-slate-200 font-bold bg-slate-800 px-3.5 py-2 rounded-xl border border-slate-700 hidden sm:inline-block">
+                    Ramesh Mistri
+                </span>
+                <button onclick="handleWorkerLogout()" class="text-xs text-rose-400 hover:text-rose-300 font-bold px-3 py-2 rounded-xl hover:bg-rose-950/40 transition cursor-pointer">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- Live Radar Status Banner -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-950 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-8 -bottom-8 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="flex items-center gap-4 relative z-10">
+                <div class="w-14 h-14 rounded-2xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 radar-active shrink-0">
+                    <i data-lucide="radio" class="w-7 h-7"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        <h3 class="text-lg font-black text-white">Live Job Dispatch Active</h3>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1 max-w-md">Your status is set to Available. Incoming service bookings from nearby households will appear instantly below.</p>
+                </div>
+            </div>
+            <button onclick="loadWorkerJobQueue()" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 cursor-pointer shrink-0 relative z-10">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh Radar
+            </button>
+        </div>
+
+        <!-- Job Queue Section -->
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-black text-white flex items-center gap-2 tracking-tight">
+                        <i data-lucide="inbox" class="w-5 h-5 text-indigo-400"></i> Active Bookings & On-Site Verification
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Verify Start OTP upon arrival and End OTP after completing work to unlock earnings.</p>
+                </div>
+                <span class="text-xs font-bold text-slate-400 hidden sm:inline-block bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">Two-Stage OTP Protocol</span>
+            </div>
+
+            <div id="worker-jobs-container" class="space-y-4"></div>
+        </div>
+
+    </main>
+
+    <!-- End OTP Completion Modal -->
+    <div id="end-otp-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl text-slate-100 relative">
+            <button onclick="closeEndOtpModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <span class="text-[10px] font-extrabold text-amber-400 bg-amber-950/80 px-2.5 py-1 rounded-full uppercase tracking-wider border border-amber-800/60">Final Job Stage</span>
+            <h3 class="text-xl font-black text-white mt-2">Enter Completion End OTP</h3>
+            <p class="text-xs text-slate-400 mt-1">Ask the customer to inspect your finished work. Customer will share their 4-digit End OTP to complete the service.</p>
+
+            <form onsubmit="handleEndOtpSubmit(event)" class="mt-5 space-y-4">
+                <input type="hidden" id="end-otp-booking-id">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-2 text-center uppercase tracking-wider">4-Digit End OTP</label>
+                    <input type="text" id="end-otp-input" maxlength="4" placeholder="••••" required class="w-full bg-slate-950 border-2 border-amber-500/50 rounded-2xl py-4 text-3xl font-black text-center tracking-[0.5em] text-amber-300 focus:outline-none focus:border-amber-400 font-mono">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-emerald-600/30 transition cursor-pointer">
+                    Verify End OTP & Complete Job
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Worker Login Modal -->
+    <div id="worker-login-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl text-slate-100 relative">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-600/30 border border-indigo-500/40 text-indigo-400 flex items-center justify-center mb-4">
+                <i data-lucide="shield" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-2xl font-black text-white">Worker Authentication</h3>
+            <p class="text-xs text-slate-400 mt-1">Sign in to access your on-site job dispatch console & earnings ledger.</p>
+
+            <form onsubmit="handleWorkerLogin(event)" class="mt-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Registered Worker Email</label>
+                    <input type="email" id="worker-login-email" value="ramesh.plumber@servicehub.com" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Password</label>
+                    <input type="password" id="worker-login-password" value="Worker@123" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="p-3 bg-indigo-950/80 border border-indigo-800/60 rounded-2xl text-[11px] text-indigo-200 space-y-1">
+                    <strong class="block text-white font-extrabold">Demo Worker Credentials:</strong>
+                    <div class="flex flex-wrap gap-1.5 mt-1">
+                        <button type="button" onclick="fillWorkerDemo('ramesh.plumber@servicehub.com', 'Worker@123')" class="px-2 py-1 bg-slate-800 text-indigo-300 rounded-md border border-indigo-700 font-bold hover:bg-slate-700">Plumber (Ramesh)</button>
+                        <button type="button" onclick="fillWorkerDemo('mukesh.electrician@servicehub.com', 'Worker@123')" class="px-2 py-1 bg-slate-800 text-indigo-300 rounded-md border border-indigo-700 font-bold hover:bg-slate-700">Electrician (Mukesh)</button>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-indigo-600/30 transition cursor-pointer">
+                    Sign In to Console
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/worker.js"></script>
+    <script>
+        function fillWorkerDemo(email, pass) {
+            const e = document.getElementById("worker-login-email");
+            const p = document.getElementById("worker-login-password");
+            if (e && p) {
+                e.value = email;
+                p.value = pass;
+            }
+        }
+        if (window.lucide) lucide.createIcons();
+    </script>
+</body>
+</html>

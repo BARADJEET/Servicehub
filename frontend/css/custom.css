@@ -1,0 +1,358 @@
+/* ==========================================================================
+   ServiceHub UI UX Pro Max — Modern Hyperlocal Marketplace Design System
+   Elevated Modern Aesthetics, Mesh Gradients, Tactile Micro-Interactions
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Brand Primary: Deep Electric Indigo & Royal Violet */
+    --brand-50: #eef2ff;
+    --brand-100: #e0e7ff;
+    --brand-200: #c7d2fe;
+    --brand-300: #a5b4fc;
+    --brand-400: #818cf8;
+    --brand-500: #6366f1;
+    --brand-600: #4f46e5;
+    --brand-700: #4338ca;
+    --brand-800: #3730a3;
+    --brand-900: #312e81;
+    --brand-950: #1e1b4b;
+
+    /* Secondary & Accent Tokens */
+    --accent-emerald: #10b981;
+    --accent-amber: #f59e0b;
+    --accent-rose: #f43f5e;
+    --accent-cyan: #06b6d4;
+    --accent-violet: #8b5cf6;
+
+    /* Surfaces & Neutrals */
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-muted: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border-subtle: rgba(226, 232, 240, 0.85);
+    --border-hover: rgba(99, 102, 241, 0.35);
+
+    /* Gradients */
+    --gradient-brand: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #7c3aed 100%);
+    --gradient-hero: linear-gradient(135deg, #090d16 0%, #0f172a 45%, #1e1b4b 100%);
+    --gradient-sheen: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+
+    /* Elevation & Shadows */
+    --shadow-subtle: 0 1px 3px 0 rgba(15, 23, 42, 0.04);
+    --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+    --shadow-card-hover: 0 20px 35px -8px rgba(79, 70, 229, 0.14), 0 8px 16px -4px rgba(15, 23, 42, 0.05);
+    --shadow-brand-glow: 0 0 30px rgba(99, 102, 241, 0.35);
+    --shadow-emerald-glow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+/* Base Body & Reset */
+html {
+    scroll-behavior: smooth;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--bg-main);
+    background-image: 
+        radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.025) 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(16, 185, 129, 0.025) 0%, transparent 45%),
+        linear-gradient(to right, rgba(226, 232, 240, 0.25) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(226, 232, 240, 0.25) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tabular Numbers */
+.font-tabular {
+    font-family: 'JetBrains Mono', 'Inter', monospace;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+    border: 2px solid #f1f5f9;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ==========================================================================
+   Modern Surface Utilities & Glassmorphism
+   ========================================================================== */
+.glass-nav {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+}
+
+.glass-nav-dark {
+    background: rgba(10, 14, 26, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(30, 41, 59, 0.8);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: var(--shadow-card);
+}
+
+.glass-card-dark {
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(51, 65, 85, 0.7);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+}
+
+.glass-pill {
+    background: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+/* ==========================================================================
+   Micro-interactions & Lift Transitions
+   ========================================================================== */
+.hover-lift {
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: var(--border-hover);
+}
+
+.card-img-zoom {
+    overflow: hidden;
+}
+.card-img-zoom img {
+    transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-lift:hover .card-img-zoom img {
+    transform: scale(1.08);
+}
+
+/* Gradient Text */
+.gradient-text {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-gold {
+    background: linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #e11d48 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Modern Brand Button */
+.btn-brand-primary {
+    background: var(--gradient-brand);
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
+}
+.btn-brand-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.45);
+}
+.btn-brand-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-sheen);
+    transition: 0.6s ease;
+}
+.btn-brand-primary:hover::after {
+    left: 100%;
+}
+
+/* ==========================================================================
+   Two-Stage OTP Verification Styles
+   ========================================================================== */
+.otp-display-badge {
+    font-family: 'JetBrains Mono', 'Inter', monospace;
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: 0.35em;
+    padding: 0.65rem 1.4rem;
+    border-radius: 1.15rem;
+    background: linear-gradient(135deg, #121033 0%, #1e1b4b 60%, #312e81 100%);
+    color: #c7d2fe;
+    border: 2px solid rgba(99, 102, 241, 0.45);
+    box-shadow: 0 10px 25px -4px rgba(79, 70, 229, 0.35);
+    text-align: center;
+    user-select: all;
+}
+
+.otp-box-digit {
+    width: 3.35rem;
+    height: 3.85rem;
+    font-size: 1.85rem;
+    font-weight: 800;
+    text-align: center;
+    border-radius: 1rem;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    color: #0f172a;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.otp-box-digit:focus {
+    border-color: #4f46e5;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+    outline: none;
+    transform: scale(1.05);
+}
+
+.otp-box-digit-dark {
+    width: 3.35rem;
+    height: 3.85rem;
+    font-size: 1.85rem;
+    font-weight: 800;
+    text-align: center;
+    border-radius: 1rem;
+    background: #1e293b;
+    border: 2px solid #475569;
+    color: #f8fafc;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.otp-box-digit-dark:focus {
+    border-color: #818cf8;
+    background: #0f172a;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.3);
+    outline: none;
+    transform: scale(1.05);
+}
+
+/* ==========================================================================
+   QR Code Scanner Frame & Laser Animation
+   ========================================================================== */
+@keyframes scanLaser {
+    0% {
+        top: 8px;
+        opacity: 0.85;
+    }
+    50% {
+        top: calc(100% - 12px);
+        opacity: 1;
+    }
+    100% {
+        top: 8px;
+        opacity: 0.85;
+    }
+}
+
+.scanner-laser {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 3.5px;
+    background: linear-gradient(90deg, transparent, #4f46e5, #06b6d4, #4f46e5, transparent);
+    box-shadow: 0 0 16px 3px rgba(99, 102, 241, 0.8);
+    border-radius: 9999px;
+    animation: scanLaser 2.2s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.qr-target-corner {
+    width: 20px;
+    height: 20px;
+    border-color: #4f46e5;
+    position: absolute;
+}
+
+/* ==========================================================================
+   Live Activity Marquee Ticker
+   ========================================================================== */
+@keyframes tickerSlide {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.ticker-track {
+    display: flex;
+    width: max-content;
+    animation: tickerSlide 38s linear infinite;
+}
+.ticker-track:hover {
+    animation-play-state: paused;
+}
+
+/* ==========================================================================
+   Interactive Cost Estimator & Quick Action Cards
+   ========================================================================== */
+.estimator-chip {
+    padding: 0.55rem 0.95rem;
+    border-radius: 0.85rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    background: #ffffff;
+    color: #334155;
+}
+.estimator-chip:hover {
+    border-color: #818cf8;
+    background: #f8fafc;
+}
+.estimator-chip.active {
+    border-color: #4f46e5;
+    background: #eef2ff;
+    color: #4338ca;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.15);
+}
+
+/* Print styles for Invoice */
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+    #receipt-modal, #receipt-modal * {
+        visibility: visible !important;
+    }
+    #receipt-modal {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: white !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+    #receipt-modal .no-print {
+        display: none !important;
+    }
+}

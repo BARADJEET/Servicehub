@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ServiceHub — Fast. Local. Verified.</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: { DEFAULT: '#4f46e5', dark: '#4338ca', deep: '#1e1b4b' },
+          accent: '#10b981',
+          warn: '#f59e0b',
+        },
+        fontFamily: { sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'] },
+        borderRadius: { '2xl': '1rem', '3xl': '1.5rem' },
+      }
+    }
+  }
+</script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="min-h-screen text-slate-800">
+
+<div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 w-full max-w-sm px-4 sm:px-0"></div>
+<div id="modal-root"></div>
+
+<nav class="sticky top-0 z-40 glass shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-2 cursor-pointer" onclick="goHome()">
+      <div class="w-9 h-9 rounded-2xl brand-gradient flex items-center justify-center shadow-md shadow-indigo-300">
+        <i data-lucide="hammer" class="w-5 h-5 text-white"></i>
+      </div>
+      <div class="leading-none">
+        <div class="font-extrabold text-lg text-brand-deep tracking-tight">ServiceHub</div>
+        <div class="text-[10px] font-semibold text-slate-400 tracking-wide -mt-0.5">FAST. LOCAL. VERIFIED.</div>
+      </div>
+    </div>
+    <div id="nav-right" class="flex items-center gap-3"></div>
+  </div>
+</nav>
+
+<main id="app" class="max-w-7xl mx-auto px-4 sm:px-6 pb-24"></main>
+
+<footer class="border-t border-slate-200 py-8 mt-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-400">
+    <div class="flex items-center gap-2"><i data-lucide="hammer" class="w-4 h-4"></i> <span class="font-bold text-slate-500">ServiceHub</span> — Fast. Local. Verified.</div>
+    <div class="flex items-center gap-4">
+      <a href="/admin" class="hover:text-brand transition">Admin Portal</a>
+      <a href="/docs" class="hover:text-brand transition">API Docs</a>
+    </div>
+  </div>
+</footer>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/customer.js"></script>
+<script src="/static/js/worker.js"></script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
