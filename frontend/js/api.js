@@ -43,7 +43,14 @@ const Api = {
             const data = await res.json().catch(() => ({}));
             
             if (!res.ok) {
-                const errorMsg = data.detail || "An unexpected error occurred";
+                let errorMsg = "An unexpected error occurred";
+                if (typeof data.detail === "string") {
+                    errorMsg = data.detail;
+                } else if (Array.isArray(data.detail) && data.detail.length > 0) {
+                    errorMsg = data.detail.map(d => d.msg || (typeof d === "string" ? d : JSON.stringify(d))).join(", ");
+                } else if (data.message) {
+                    errorMsg = data.message;
+                }
                 throw new Error(errorMsg);
             }
             return data;

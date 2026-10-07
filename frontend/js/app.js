@@ -37,6 +37,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         const el = document.getElementById("user-display-name");
         if (el) el.innerText = user.full_name;
     }
+
+    // Auto-open modals based on URL query params
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("open") === "register-worker") {
+        openRegisterModal("worker");
+    } else if (urlParams.get("open") === "register") {
+        openRegisterModal("customer");
+    } else if (urlParams.get("open") === "login") {
+        openLoginModal();
+    }
 });
 
 function initAuthUI() {
@@ -642,6 +652,30 @@ async function handleAadhaarUpload(e) {
         }
         showToast(err.message, "error");
     }
+}
+
+function useSampleAadhaar() {
+    const aadhaarInput = document.getElementById("reg-aadhaar-number");
+    const urlInput = document.getElementById("reg-aadhaar-url");
+    const statusEl = document.getElementById("reg-aadhaar-status");
+
+    if (aadhaarInput) aadhaarInput.value = "4291 8023 9104";
+    if (urlInput) urlInput.value = "/uploads/sample_aadhaar_card.png";
+
+    if (statusEl) {
+        statusEl.classList.remove("hidden");
+        statusEl.innerHTML = `
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-bold">
+                <span class="flex items-center gap-1.5 truncate">
+                    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                    <span class="truncate">Sample UIDAI Verified Document Staged</span>
+                </span>
+                <span class="text-[10px] uppercase tracking-wider bg-emerald-200/80 px-2 py-0.5 rounded-md text-emerald-900 shrink-0">Demo Ready</span>
+            </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+    }
+    showToast("⚡ Sample Verified Aadhaar loaded for quick testing!");
 }
 
 function togglePasswordVisibility(inputId, btnEl) {
