@@ -1,7 +1,21 @@
 // ServiceHub Worker Console Controller
+let lastWorkerJobsHash = "";
+let workerPollTimer = null;
+
+function startWorkerLivePolling() {
+    if (workerPollTimer) clearInterval(workerPollTimer);
+    workerPollTimer = setInterval(() => {
+        const user = Api.getUser();
+        if (user && user.role === "worker") {
+            loadWorkerJobQueue(true);
+        }
+    }, 2500);
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     checkWorkerAuth();
     await loadWorkerJobQueue();
+    startWorkerLivePolling();
 });
 
 function checkWorkerAuth() {
@@ -33,12 +47,24 @@ function checkWorkerAuth() {
     }
 }
 
-async function loadWorkerJobQueue() {
+async function loadWorkerJobQueue(isSilent = false) {
     const container = document.getElementById("worker-jobs-container");
     if (!container) return;
 
     try {
         const bookings = await Api.getMyBookings();
+        const currentHash = JSON.stringify(bookings.map(b => ({
+            id: b.id,
+            status: b.status,
+            p_status: b.payment_status,
+            otps: b.otps?.map(o => ({ type: o.otp_type, verified: o.is_verified }))
+        })));
+
+        if (isSilent && currentHash === lastWorkerJobsHash) {
+            return;
+        }
+        lastWorkerJobsHash = currentHash;
+
         if (!bookings.length) {
             container.innerHTML = `
                 <div class="p-12 text-center bg-slate-900 rounded-3xl border border-slate-800 shadow-xl">
@@ -56,7 +82,7 @@ async function loadWorkerJobQueue() {
         container.innerHTML = bookings.map(b => renderWorkerJobCard(b)).join("");
         if (window.lucide) lucide.createIcons();
     } catch (err) {
-        console.error("Failed to load worker jobs:", err);
+        if (!isSilent) console.error("Failed to load worker jobs:", err);
     }
 }
 
@@ -193,11 +219,19 @@ async function submitStartOtp(bId) {
     }
 }
 
-function openEndOtpModal(bId) {
+async function openEndOtpModal(bId) {
     document.getElementById("end-otp-booking-id").value = bId;
     document.getElementById("end-otp-input").value = "";
     document.getElementById("end-otp-modal")?.classList.remove("hidden");
     document.getElementById("end-otp-input")?.focus();
+
+    // Immediately trigger End OTP generation so it is guaranteed on the customer's screen
+    try {
+        await Api.requestCompletion(bId);
+        showToast("End OTP generated! Please ask customer for the 4-digit code shown on their screen.");
+    } catch (e) {
+        // If already active or generated, proceed
+    }
 }
 
 function closeEndOtpModal() {
@@ -214,14 +248,25 @@ async function handleEndOtpSubmit(e) {
         return;
     }
 
+    const submitBtn = e.target.querySelector("button[type='submit']");
+    const origHtml = submitBtn ? submitBtn.innerHTML : "Verify End OTP & Complete Job";
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Verifying...`;
+    }
+
     try {
-        await Api.requestCompletion(bId);
+        try { await Api.requestCompletion(bId); } catch (_) {}
         await Api.verifyEndOtp(bId, otp);
-        showToast("End OTP verified! Job completed. Customer can now settle payment via UPI, Card, Net Banking or Cash.");
+        showToast("🎉 End OTP verified! Job completed. Customer can now settle payment via UPI, Card, Net Banking or Cash.");
         closeEndOtpModal();
-        loadWorkerJobQueue();
+        await loadWorkerJobQueue();
     } catch (err) {
         showToast(err.message, "error");
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origHtml;
+        }
     }
 }
 

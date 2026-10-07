@@ -64,6 +64,21 @@ class BookingService:
         start_otp.is_verified = True
         start_otp.verified_at = datetime.utcnow()
         booking.status = "IN_PROGRESS"
+
+        # Pre-generate End OTP immediately so the customer never waits
+        existing_end_otp = db.query(OTPVerification).filter(
+            OTPVerification.booking_id == booking.id,
+            OTPVerification.otp_type == "END"
+        ).first()
+        if not existing_end_otp:
+            end_otp = OTPVerification(
+                booking_id=booking.id,
+                otp_type="END",
+                otp_code=BookingService.generate_otp_code(),
+                is_verified=False
+            )
+            db.add(end_otp)
+
         db.commit()
         db.refresh(booking)
         return True

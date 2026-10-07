@@ -47,9 +47,30 @@ def get_my_bookings(current_user: User = Depends(get_current_user), db: Session 
     if current_user.role == "worker":
         worker = db.query(WorkerProfile).filter(WorkerProfile.user_id == current_user.id).first()
         if not worker: return []
-        return db.query(Booking).filter(Booking.worker_id == worker.id).order_by(Booking.created_at.desc()).all()
+        bookings = db.query(Booking).filter(Booking.worker_id == worker.id).order_by(Booking.created_at.desc()).all()
     else:
-        return db.query(Booking).filter(Booking.customer_id == current_user.id).order_by(Booking.created_at.desc()).all()
+        bookings = db.query(Booking).filter(Booking.customer_id == current_user.id).order_by(Booking.created_at.desc()).all()
+
+    # Guarantee End OTP is generated instantly for any IN_PROGRESS booking
+    modified = False
+    for b in bookings:
+        if b.status == "IN_PROGRESS":
+            has_end = any(o.otp_type == "END" for o in b.otps)
+            if not has_end:
+                end_otp = OTPVerification(
+                    booking_id=b.id,
+                    otp_type="END",
+                    otp_code=BookingService.generate_otp_code(),
+                    is_verified=False
+                )
+                db.add(end_otp)
+                modified = True
+    if modified:
+        db.commit()
+        for b in bookings:
+            db.refresh(b)
+
+    return bookings
 
 @router.get("/{booking_id}", response_model=BookingResponse)
 def get_booking_details(booking_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):

@@ -404,12 +404,17 @@
         <section id="view-bookings" class="view-section hidden space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-white rounded-3xl border border-slate-200/80 shadow-xs">
                 <div>
-                    <span class="text-xs font-black uppercase tracking-widest text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full">Live Service Tracker</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-black uppercase tracking-widest text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full">Live Service Tracker</span>
+                        <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Live Real-Time Sync (2.5s)
+                        </span>
+                    </div>
                     <h2 class="text-2xl font-black text-slate-900 tracking-tight mt-1">My Service Bookings &amp; Live OTPs</h2>
-                    <p class="text-xs text-slate-500 mt-1">Track real-time technician arrival, reveal Start OTP upon doorstep arrival, and confirm completion</p>
+                    <p class="text-xs text-slate-500 mt-1">Track real-time technician arrival, reveal Start OTP upon doorstep arrival, and confirm completion with End OTP</p>
                 </div>
                 <button onclick="loadMyBookings()" class="px-5 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-2xl text-xs font-bold transition flex items-center gap-2 cursor-pointer self-start sm:self-auto">
-                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh Status
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh Status &amp; OTPs
                 </button>
             </div>
 

@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadCategories();
     await searchWorkers();
     await loadMyBookings();
+    startCustomerBookingsPolling();
     
     const user = Api.getUser();
     if (user && user.role === "customer") {
@@ -268,12 +269,26 @@ async function handleBookingSubmit(e) {
     }
 }
 
-async function loadMyBookings() {
+let lastBookingsHash = "";
+let customerBookingsPollTimer = null;
+
+function startCustomerBookingsPolling() {
+    if (customerBookingsPollTimer) clearInterval(customerBookingsPollTimer);
+    customerBookingsPollTimer = setInterval(() => {
+        const user = Api.getUser();
+        if (user && user.role === "customer" && currentTab === "bookings") {
+            loadMyBookings(true);
+        }
+    }, 2500);
+}
+
+async function loadMyBookings(isSilent = false) {
     const container = document.getElementById("my-bookings-container");
     if (!container) return;
 
     const user = Api.getUser();
     if (!user) {
+        if (isSilent) return;
         container.innerHTML = `
             <div class="p-12 text-center bg-white rounded-3xl border border-slate-200 shadow-xs">
                 <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-3">
@@ -293,6 +308,20 @@ async function loadMyBookings() {
     try {
         const bookings = await Api.getMyBookings();
         currentLoadedBookings = bookings || [];
+
+        // Check if data actually changed to avoid unnecessary DOM thrashing
+        const currentHash = JSON.stringify(bookings.map(b => ({
+            id: b.id,
+            status: b.status,
+            payment_status: b.payment_status,
+            otps: b.otps?.map(o => ({ type: o.otp_type, code: o.otp_code, verified: o.is_verified }))
+        })));
+
+        if (isSilent && currentHash === lastBookingsHash) {
+            return;
+        }
+        lastBookingsHash = currentHash;
+
         if (!bookings.length) {
             container.innerHTML = `
                 <div class="p-12 text-center bg-white rounded-3xl border border-slate-200 shadow-xs">
@@ -313,7 +342,7 @@ async function loadMyBookings() {
         container.innerHTML = bookings.map(b => renderBookingCard(b)).join("");
         if (window.lucide) lucide.createIcons();
     } catch (err) {
-        console.error("Failed to load bookings:", err);
+        if (!isSilent) console.error("Failed to load bookings:", err);
     }
 }
 
@@ -369,30 +398,47 @@ function renderBookingCard(b) {
                 </div>
             </div>
         `;
-    } else if (b.status === "IN_PROGRESS" && endOtpObj) {
-        otpDisplay = `
-            <div class="mt-5 p-5 rounded-3xl bg-gradient-to-r from-emerald-950 via-teal-950 to-slate-900 text-white shadow-xl border border-emerald-500/40">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-200">Work In Progress • Inspect Quality</span>
+    } else if (b.status === "IN_PROGRESS") {
+        if (endOtpObj) {
+            otpDisplay = `
+                <div class="mt-5 p-5 rounded-3xl bg-gradient-to-r from-emerald-950 via-teal-950 to-slate-900 text-white shadow-xl border border-emerald-500/40">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-200">Work In Progress • Completion End OTP Ready</span>
+                        </div>
+                        <span class="text-[11px] text-emerald-300 font-semibold">Share upon job completion</span>
                     </div>
-                    <span class="text-[11px] text-emerald-300 font-semibold">Share after full satisfaction</span>
+                    <div class="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-[10px] font-bold text-emerald-300 uppercase tracking-wider block">COMPLETION END OTP</span>
+                            <div class="flex items-center gap-3 mt-1">
+                                <span class="otp-display-badge text-amber-300 font-mono tracking-widest">${endOtpObj.otp_code}</span>
+                                <span class="text-xs text-emerald-200 max-w-xs">Share this 4-digit code with technician once work is finished and inspected.</span>
+                            </div>
+                        </div>
+                        <button onclick="navigator.clipboard.writeText('${endOtpObj.otp_code}'); showToast('End OTP Copied to clipboard!')" class="px-4 py-2 bg-emerald-800 hover:bg-emerald-700 text-white rounded-2xl text-xs font-extrabold transition shadow-md cursor-pointer self-start sm:self-auto">
+                            Copy OTP
+                        </button>
+                    </div>
                 </div>
-                <div class="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <span class="text-[10px] font-bold text-emerald-300 uppercase tracking-wider block">COMPLETION END OTP</span>
-                        <div class="flex items-center gap-3 mt-1">
-                            <span class="otp-display-badge text-amber-300">${endOtpObj.otp_code}</span>
-                            <span class="text-xs text-emerald-200 max-w-xs">Share this OTP only when repair/service meets your full expectation.</span>
+            `;
+        } else {
+            otpDisplay = `
+                <div class="mt-5 p-4 rounded-3xl bg-gradient-to-r from-emerald-950/90 to-slate-900 border border-emerald-500/30 text-white flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></div>
+                        <div>
+                            <span class="text-xs font-black text-emerald-300 block">Work In Progress</span>
+                            <span class="text-[11px] text-slate-300">Generating live Completion End OTP...</span>
                         </div>
                     </div>
-                    <button onclick="navigator.clipboard.writeText('${endOtpObj.otp_code}'); showToast('End OTP Copied to clipboard!')" class="px-4 py-2 bg-emerald-800 hover:bg-emerald-700 text-white rounded-2xl text-xs font-extrabold transition shadow-md cursor-pointer self-start sm:self-auto">
-                        Copy OTP
+                    <button onclick="loadMyBookings()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Reveal OTP
                     </button>
                 </div>
-            </div>
-        `;
+            `;
+        }
     }
 
     let reviewButton = "";
