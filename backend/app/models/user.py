@@ -31,6 +31,7 @@ class WorkerProfile(Base):
     bio = Column(Text, nullable=True)
     city = Column(String(50), default="Ahmedabad")
     locality = Column(String(100), default="Navrangpura")
+    aadhaar_number = Column(String(20), nullable=True)
     id_proof_url = Column(String(255), nullable=True)
     is_verified = Column(Boolean, default=False)
     is_available = Column(Boolean, default=True)

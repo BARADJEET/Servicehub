@@ -103,6 +103,14 @@ const Api = {
             body: formData
         });
     },
+    uploadAadhaar(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        return this.request("/api/workers/upload-aadhaar-public", {
+            method: "POST",
+            body: formData
+        });
+    },
     updateWorkerProfile(payload) {
         return this.request("/api/workers/me/profile", {
             method: "PATCH",

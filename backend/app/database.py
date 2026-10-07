@@ -28,6 +28,13 @@ def run_migrations():
                     if "paid_at" not in col_names:
                         conn.execute(text("ALTER TABLE bookings ADD COLUMN paid_at DATETIME"))
                     conn.commit()
+
+                result_wp = conn.execute(text("PRAGMA table_info(worker_profiles)")).fetchall()
+                col_names_wp = [r[1] for r in result_wp]
+                if col_names_wp:
+                    if "aadhaar_number" not in col_names_wp:
+                        conn.execute(text("ALTER TABLE worker_profiles ADD COLUMN aadhaar_number VARCHAR(20)"))
+                    conn.commit()
     except Exception as e:
         print(f"Migration note: {e}")
 

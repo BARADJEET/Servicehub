@@ -15,6 +15,8 @@ class WorkerRegister(BaseModel):
     bio: Optional[str] = None
     city: Optional[str] = "Ahmedabad"
     locality: Optional[str] = "Navrangpura"
+    aadhaar_number: Optional[str] = None
+    id_proof_url: Optional[str] = None
 
 class WorkerProfileUpdate(BaseModel):
     hourly_rate: Optional[float] = None
@@ -23,6 +25,8 @@ class WorkerProfileUpdate(BaseModel):
     experience_years: Optional[int] = None
     city: Optional[str] = None
     locality: Optional[str] = None
+    aadhaar_number: Optional[str] = None
+    id_proof_url: Optional[str] = None
 
 class WorkerResponse(BaseModel):
     id: int
@@ -33,6 +37,7 @@ class WorkerResponse(BaseModel):
     bio: Optional[str] = None
     city: str
     locality: str
+    aadhaar_number: Optional[str] = None
     id_proof_url: Optional[str] = None
     is_verified: bool
     is_available: bool

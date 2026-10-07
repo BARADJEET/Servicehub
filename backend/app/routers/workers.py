@@ -61,6 +61,8 @@ def register_worker(payload: WorkerRegister, db: Session = Depends(get_db)):
         bio=payload.bio,
         city=payload.city or "Ahmedabad",
         locality=payload.locality or "Navrangpura",
+        aadhaar_number=payload.aadhaar_number,
+        id_proof_url=payload.id_proof_url,
         is_verified=False # Requires admin review
     )
     db.add(profile)
@@ -69,6 +71,22 @@ def register_worker(payload: WorkerRegister, db: Session = Depends(get_db)):
 
     token = create_access_token(data={"sub": user.id, "role": "worker"})
     return Token(access_token=token, token_type="bearer", user=user)
+
+@router.post("/upload-aadhaar-public")
+def upload_aadhaar_public(file: UploadFile = File(...)):
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    file_ext = Path(file.filename).suffix or ".jpg"
+    dest_name = f"aadhaar_{uuid.uuid4().hex[:12]}{file_ext}"
+    dest_path = UPLOAD_DIR / dest_name
+
+    with open(dest_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    return {
+        "status": "success",
+        "file_url": f"/uploads/{dest_name}",
+        "filename": file.filename
+    }
 
 @router.post("/upload-id", response_model=WorkerResponse)
 def upload_kyc_document(

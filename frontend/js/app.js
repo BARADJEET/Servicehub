@@ -525,23 +525,149 @@ async function handleReviewSubmit(e) {
     }
 }
 
+let currentRegisterRole = "customer";
+
 function openLoginModal() {
+    document.getElementById("register-modal")?.classList.add("hidden");
     document.getElementById("login-modal")?.classList.remove("hidden");
+    if (window.lucide) lucide.createIcons();
 }
 function closeLoginModal() {
     document.getElementById("login-modal")?.classList.add("hidden");
 }
-function openRegisterModal() {
+function openRegisterModal(initialRole = "customer") {
+    document.getElementById("login-modal")?.classList.add("hidden");
     document.getElementById("register-modal")?.classList.remove("hidden");
+    setRegisterRole(initialRole);
+    if (window.lucide) lucide.createIcons();
 }
 function closeRegisterModal() {
     document.getElementById("register-modal")?.classList.add("hidden");
 }
 
+function setRegisterRole(role) {
+    currentRegisterRole = role;
+    const custTab = document.getElementById("reg-tab-customer");
+    const workerTab = document.getElementById("reg-tab-worker");
+    const workerFields = document.getElementById("worker-reg-fields");
+    const submitBtnText = document.getElementById("reg-submit-btn-text");
+
+    if (role === "worker") {
+        workerTab?.classList.add("bg-indigo-600", "text-white", "shadow-md");
+        workerTab?.classList.remove("text-slate-600", "bg-transparent");
+        custTab?.classList.remove("bg-indigo-600", "text-white", "shadow-md");
+        custTab?.classList.add("text-slate-600", "bg-transparent");
+        workerFields?.classList.remove("hidden");
+        if (submitBtnText) submitBtnText.innerText = "Register as Verified Technician";
+
+        // Populate worker category select if empty
+        const catSelect = document.getElementById("reg-worker-category");
+        if (catSelect && (!catSelect.options || catSelect.options.length <= 1) && currentCategories.length) {
+            catSelect.innerHTML = `<option value="">Select Primary Trade / Domain</option>` + currentCategories.map(c => `
+                <option value="${c.id}">${c.name}</option>
+            `).join("");
+        }
+    } else {
+        custTab?.classList.add("bg-indigo-600", "text-white", "shadow-md");
+        custTab?.classList.remove("text-slate-600", "bg-transparent");
+        workerTab?.classList.remove("bg-indigo-600", "text-white", "shadow-md");
+        workerTab?.classList.add("text-slate-600", "bg-transparent");
+        workerFields?.classList.add("hidden");
+        if (submitBtnText) submitBtnText.innerText = "Register Customer Account";
+    }
+
+    if (window.lucide) lucide.createIcons();
+}
+
+function formatAadhaarInput(e) {
+    let val = e.target.value.replace(/\D/g, "");
+    if (val.length > 12) val = val.substring(0, 12);
+    // Format into 4-digit chunks e.g. 1234 5678 9012
+    let formatted = "";
+    for (let i = 0; i < val.length; i++) {
+        if (i > 0 && i % 4 === 0) formatted += " ";
+        formatted += val[i];
+    }
+    e.target.value = formatted;
+}
+
+async function handleAadhaarUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check size < 10MB
+    if (file.size > 10 * 1024 * 1024) {
+        showToast("File size exceeds 10MB. Please choose a smaller image or PDF.", "error");
+        return;
+    }
+
+    const statusEl = document.getElementById("reg-aadhaar-status");
+    const previewEl = document.getElementById("reg-aadhaar-preview-name");
+    const urlInput = document.getElementById("reg-aadhaar-url");
+
+    if (statusEl) {
+        statusEl.classList.remove("hidden");
+        statusEl.innerHTML = `
+            <div class="flex items-center gap-2 text-indigo-700 text-xs font-bold animate-pulse">
+                <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+                <span>Securing and uploading Aadhaar document...</span>
+            </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+    }
+
+    try {
+        const res = await Api.uploadAadhaar(file);
+        if (urlInput) urlInput.value = res.file_url;
+        if (statusEl) {
+            statusEl.innerHTML = `
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-bold">
+                    <span class="flex items-center gap-1.5 truncate">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                        <span class="truncate">Aadhaar Staged: ${file.name}</span>
+                    </span>
+                    <span class="text-[10px] uppercase tracking-wider bg-emerald-200/80 px-2 py-0.5 rounded-md text-emerald-900 shrink-0">Ready</span>
+                </div>
+            `;
+            if (window.lucide) lucide.createIcons();
+        }
+        showToast("Aadhaar Card uploaded successfully for KYC verification!");
+    } catch (err) {
+        if (statusEl) {
+            statusEl.innerHTML = `
+                <div class="p-2 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-bold">
+                    Upload failed: ${err.message}. Please try again.
+                </div>
+            `;
+        }
+        showToast(err.message, "error");
+    }
+}
+
+function togglePasswordVisibility(inputId, btnEl) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    if (input.type === "password") {
+        input.type = "text";
+        if (btnEl) btnEl.innerHTML = `<i data-lucide="eye-off" class="w-4 h-4"></i>`;
+    } else {
+        input.type = "password";
+        if (btnEl) btnEl.innerHTML = `<i data-lucide="eye" class="w-4 h-4"></i>`;
+    }
+    if (window.lucide) lucide.createIcons();
+}
+
 async function handleLoginSubmit(e) {
     e.preventDefault();
-    const email = document.getElementById("login-email").value;
+    const email = document.getElementById("login-email").value.trim();
     const pass = document.getElementById("login-password").value;
+
+    const submitBtn = e.target.querySelector("button[type='submit']");
+    const origHtml = submitBtn ? submitBtn.innerHTML : "Sign In";
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Signing In...`;
+    }
 
     try {
         const res = await Api.login(email, pass);
@@ -550,32 +676,122 @@ async function handleLoginSubmit(e) {
         showToast(`Welcome back, ${res.user.full_name}!`);
         closeLoginModal();
         initAuthUI();
-        loadMyBookings();
+        
+        if (res.user.role === "worker") {
+            window.location.href = "/worker";
+        } else if (res.user.role === "admin") {
+            window.location.href = "/admin";
+        } else {
+            loadMyBookings();
+        }
     } catch (err) {
         showToast(err.message, "error");
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origHtml;
+        }
     }
 }
 
 async function handleRegisterSubmit(e) {
     e.preventDefault();
-    const payload = {
-        full_name: document.getElementById("reg-name").value,
-        email: document.getElementById("reg-email").value,
-        phone: document.getElementById("reg-phone").value,
-        password: document.getElementById("reg-password").value,
-        role: "customer"
-    };
 
-    try {
-        const res = await Api.register(payload);
-        Api.setToken(res.access_token);
-        Api.setUser(res.user);
-        showToast("Account registered successfully!");
-        closeRegisterModal();
-        initAuthUI();
-        loadMyBookings();
-    } catch (err) {
-        showToast(err.message, "error");
+    const fullName = document.getElementById("reg-name").value.trim();
+    const email = document.getElementById("reg-email").value.trim();
+    const phone = document.getElementById("reg-phone").value.trim();
+    const password = document.getElementById("reg-password").value;
+
+    if (currentRegisterRole === "worker") {
+        const categoryId = document.getElementById("reg-worker-category")?.value;
+        if (!categoryId) {
+            showToast("Please choose your service domain/category.", "error");
+            return;
+        }
+
+        const rawAadhaar = document.getElementById("reg-aadhaar-number")?.value.replace(/\s+/g, "") || "";
+        if (rawAadhaar.length !== 12 || !/^\d{12}$/.test(rawAadhaar)) {
+            showToast("Please enter a valid 12-digit Aadhaar Card number.", "error");
+            document.getElementById("reg-aadhaar-number")?.focus();
+            return;
+        }
+
+        const idProofUrl = document.getElementById("reg-aadhaar-url")?.value;
+        if (!idProofUrl) {
+            showToast("Aadhaar Card document upload is mandatory for technician onboarding.", "error");
+            document.getElementById("reg-aadhaar-file")?.focus();
+            return;
+        }
+
+        const payload = {
+            full_name: fullName,
+            email: email,
+            phone: phone,
+            password: password,
+            category_id: parseInt(categoryId, 10),
+            experience_years: parseInt(document.getElementById("reg-worker-exp")?.value, 10) || 2,
+            hourly_rate: parseFloat(document.getElementById("reg-worker-rate")?.value) || 350.0,
+            city: "Ahmedabad",
+            locality: document.getElementById("reg-worker-locality")?.value || "Navrangpura",
+            bio: document.getElementById("reg-worker-bio")?.value || "Certified background-verified service specialist.",
+            aadhaar_number: rawAadhaar,
+            id_proof_url: idProofUrl
+        };
+
+        const submitBtn = e.target.querySelector("button[type='submit']");
+        const origHtml = submitBtn ? submitBtn.innerHTML : "Register";
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Verifying & Onboarding...`;
+        }
+
+        try {
+            const res = await Api.registerWorker(payload);
+            Api.setToken(res.access_token);
+            Api.setUser(res.user);
+            showToast(`🎉 Registration submitted! Welcome ${res.user.full_name}. Aadhaar verified.`);
+            closeRegisterModal();
+            setTimeout(() => {
+                window.location.href = "/worker";
+            }, 800);
+        } catch (err) {
+            showToast(err.message, "error");
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = origHtml;
+            }
+        }
+    } else {
+        // Customer Registration
+        const payload = {
+            full_name: fullName,
+            email: email,
+            phone: phone,
+            password: password,
+            role: "customer"
+        };
+
+        const submitBtn = e.target.querySelector("button[type='submit']");
+        const origHtml = submitBtn ? submitBtn.innerHTML : "Register";
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Creating Account...`;
+        }
+
+        try {
+            const res = await Api.register(payload);
+            Api.setToken(res.access_token);
+            Api.setUser(res.user);
+            showToast("Customer account registered successfully!");
+            closeRegisterModal();
+            initAuthUI();
+            loadMyBookings();
+        } catch (err) {
+            showToast(err.message, "error");
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = origHtml;
+            }
+        }
     }
 }
 
