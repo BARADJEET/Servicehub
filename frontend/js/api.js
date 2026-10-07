@@ -61,10 +61,10 @@ const Api = {
     },
 
     // Auth
-    login(email, password) {
+    login(identifier, password) {
         return this.request("/api/auth/login", {
             method: "POST",
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email: identifier, email_or_phone: identifier, password })
         });
     },
     register(payload) {
@@ -122,6 +122,28 @@ const Api = {
         return this.request("/api/workers/me/profile", {
             method: "PATCH",
             body: JSON.stringify(payload)
+        });
+    },
+    uploadWorkerQr(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        return this.request("/api/workers/upload-qr", {
+            method: "POST",
+            body: formData
+        });
+    },
+    updateWorkerQr(paymentQrUrl, upiId) {
+        let qs = "/api/workers/profile/qr?";
+        if (paymentQrUrl) qs += `payment_qr_url=${encodeURIComponent(paymentQrUrl)}&`;
+        if (upiId) qs += `upi_id=${encodeURIComponent(upiId)}&`;
+        return this.request(qs, { method: "PATCH" });
+    },
+    uploadPaymentQr(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        return this.request("/api/bookings/upload-qr", {
+            method: "POST",
+            body: formData
         });
     },
 

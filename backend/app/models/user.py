@@ -33,6 +33,8 @@ class WorkerProfile(Base):
     locality = Column(String(100), default="Navrangpura")
     aadhaar_number = Column(String(20), nullable=True)
     id_proof_url = Column(String(255), nullable=True)
+    payment_qr_url = Column(String(255), nullable=True)
+    upi_id = Column(String(100), nullable=True)
     is_verified = Column(Boolean, default=False)
     is_available = Column(Boolean, default=True)
     is_featured = Column(Boolean, default=False)

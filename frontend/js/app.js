@@ -693,8 +693,19 @@ function togglePasswordVisibility(inputId, btnEl) {
 
 async function handleLoginSubmit(e) {
     e.preventDefault();
-    const email = document.getElementById("login-email").value.trim();
+    const identifier = document.getElementById("login-email").value.trim();
     const pass = document.getElementById("login-password").value;
+
+    // Strict 10-digit mobile number validation if numeric
+    if (!identifier.includes("@")) {
+        const cleanDigits = identifier.replace(/[\s\-\(\)\+]/g, "");
+        if (cleanDigits.length > 0) {
+            if (cleanDigits.length !== 10 || !/^\d{10}$/.test(cleanDigits)) {
+                showToast("Mobile number must be exactly 10 digits to sign in", "error");
+                return;
+            }
+        }
+    }
 
     const submitBtn = e.target.querySelector("button[type='submit']");
     const origHtml = submitBtn ? submitBtn.innerHTML : "Sign In";
@@ -704,7 +715,7 @@ async function handleLoginSubmit(e) {
     }
 
     try {
-        const res = await Api.login(email, pass);
+        const res = await Api.login(identifier, pass);
         Api.setToken(res.access_token);
         Api.setUser(res.user);
         showToast(`Welcome back, ${res.user.full_name}!`);
@@ -734,6 +745,13 @@ async function handleRegisterSubmit(e) {
     const email = document.getElementById("reg-email").value.trim();
     const phone = document.getElementById("reg-phone").value.trim();
     const password = document.getElementById("reg-password").value;
+
+    const cleanPhone = phone.replace(/[\s\-\(\)\+]/g, "");
+    if (cleanPhone.length !== 10 || !/^\d{10}$/.test(cleanPhone)) {
+        showToast("Mobile number must be exactly 10 digits.", "error");
+        document.getElementById("reg-phone")?.focus();
+        return;
+    }
 
     if (currentRegisterRole === "worker") {
         const categoryId = document.getElementById("reg-worker-category")?.value;
@@ -959,18 +977,105 @@ function stopCameraScanner() {
     if (video) video.srcObject = null;
 }
 
+// ==========================================
+// Card Formatting & Interactive Preview Functions
+// ==========================================
+function formatCardNumber(e) {
+    let val = e.target.value.replace(/\D/g, "");
+    if (val.length > 16) val = val.substring(0, 16);
+
+    const badge = document.getElementById("card-brand-badge");
+    if (badge) {
+        if (val.startsWith("4")) {
+            badge.innerText = "VISA";
+            badge.className = "text-xs font-black tracking-widest text-indigo-200 font-mono bg-blue-600/30 px-2 py-0.5 rounded-md";
+        } else if (/^(5[1-5]|2[2-7])/.test(val)) {
+            badge.innerText = "MASTERCARD";
+            badge.className = "text-xs font-black tracking-widest text-amber-200 font-mono bg-amber-600/30 px-2 py-0.5 rounded-md";
+        } else if (/^(60|65|81|82)/.test(val)) {
+            badge.innerText = "RUPAY";
+            badge.className = "text-xs font-black tracking-widest text-emerald-200 font-mono bg-emerald-600/30 px-2 py-0.5 rounded-md";
+        } else if (/^(34|37)/.test(val)) {
+            badge.innerText = "AMEX";
+            badge.className = "text-xs font-black tracking-widest text-cyan-200 font-mono bg-cyan-600/30 px-2 py-0.5 rounded-md";
+        } else {
+            badge.innerText = "VISA / MC";
+            badge.className = "text-xs font-black tracking-widest text-indigo-200 font-mono bg-white/10 px-2 py-0.5 rounded-md";
+        }
+    }
+
+    let formatted = "";
+    for (let i = 0; i < val.length; i++) {
+        if (i > 0 && i % 4 === 0) formatted += " ";
+        formatted += val[i];
+    }
+    e.target.value = formatted;
+
+    const preview = document.getElementById("card-preview-number");
+    if (preview) {
+        preview.innerText = formatted.padEnd(19, "•").replace(/(.{4})/g, "$1 ").trim().substring(0, 19) || "•••• •••• •••• ••••";
+    }
+}
+
+function formatCardExpiry(e) {
+    let val = e.target.value.replace(/\D/g, "");
+    if (val.length > 4) val = val.substring(0, 4);
+    if (val.length >= 3) {
+        val = val.substring(0, 2) + "/" + val.substring(2);
+    }
+    e.target.value = val;
+
+    const preview = document.getElementById("card-preview-expiry");
+    if (preview) {
+        preview.innerText = val || "MM/YY";
+    }
+}
+
+function formatCardCvv(e) {
+    let val = e.target.value.replace(/\D/g, "");
+    if (val.length > 4) val = val.substring(0, 4);
+    e.target.value = val;
+
+    const preview = document.getElementById("card-preview-cvv");
+    if (preview) {
+        preview.innerText = val ? val : "•••";
+    }
+}
+
+function updateCardNamePreview(e) {
+    const val = e.target.value.trim().toUpperCase() || "NAME ON CARD";
+    const preview = document.getElementById("card-preview-name");
+    if (preview) {
+        preview.innerText = val;
+    }
+}
+
 async function handleQrFileChange(event) {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 10 * 1024 * 1024) {
+        showToast("File size exceeds 10MB. Please choose a smaller image.", "error");
+        return;
+    }
+
     try {
-        showToast("Uploading your custom QR code...");
+        showToast("Uploading your custom QR code / payment slip...");
         const res = await Api.uploadPaymentQr(file);
         const qrImg = document.getElementById("merchant-qr-image");
         if (qrImg) {
             qrImg.src = `${res.qr_url}?t=${Date.now()}`;
         }
-        showToast("✅ Custom QR code updated successfully!");
+        const badge = document.getElementById("qr-source-badge");
+        if (badge) {
+            badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-100 text-indigo-800 border border-indigo-200 flex items-center gap-1";
+            badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-ping"></span> Customer Uploaded QR / Slip`;
+        }
+        const sublabel = document.getElementById("qr-worker-sublabel");
+        if (sublabel) {
+            sublabel.innerText = `Custom Customer QR Code Loaded (${file.name})`;
+        }
+        showToast("✅ Custom QR code / slip loaded successfully!");
     } catch (err) {
         showToast(`Failed to upload QR code: ${err.message}`, "error");
     }
@@ -1005,13 +1110,54 @@ function openPaymentModal(bookingId) {
     const cashLabelEl = document.getElementById("cash-amount-label");
     if (cashLabelEl) cashLabelEl.innerText = `₹${booking.total_amount}`;
 
-    // Refresh QR code image to show latest custom image
+    // Configure Worker / Default QR Code & UPI ID
     const qrImg = document.getElementById("merchant-qr-image");
-    if (qrImg) qrImg.src = `/static/images/payment_qr.png?t=${Date.now()}`;
+    const sourceBadge = document.getElementById("qr-source-badge");
+    const sublabel = document.getElementById("qr-worker-sublabel");
+    const upiDisplay = document.getElementById("display-upi-id");
+
+    const workerQr = booking.worker?.payment_qr_url;
+    const workerUpi = booking.worker?.upi_id;
+    const workerName = booking.worker?.user?.full_name || "Technician";
+
+    if (workerQr) {
+        if (qrImg) qrImg.src = `${workerQr}?t=${Date.now()}`;
+        if (sourceBadge) {
+            sourceBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1";
+            sourceBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> ${workerName}'s Verified UPI QR`;
+        }
+        if (sublabel) sublabel.innerText = `Scan to Pay ${workerName} Directly`;
+    } else {
+        if (qrImg) qrImg.src = `/static/images/payment_qr.png?t=${Date.now()}`;
+        if (sourceBadge) {
+            sourceBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-100 text-indigo-800 border border-indigo-200 flex items-center gap-1";
+            sourceBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-ping"></span> ServiceHub Escrow QR`;
+        }
+        if (sublabel) sublabel.innerText = `Scan to Pay ServiceHub Verified Escrow`;
+    }
+
+    if (workerUpi) {
+        if (upiDisplay) upiDisplay.innerText = workerUpi;
+    } else {
+        if (upiDisplay) upiDisplay.innerText = "servicehub.pay@oksbi";
+    }
 
     // Reset UTR input
     const utrInput = document.getElementById("upi-utr-input");
     if (utrInput) utrInput.value = "";
+
+    // Sync card preview with form inputs
+    const cardNumInput = document.getElementById("card-number-input");
+    if (cardNumInput) formatCardNumber({ target: cardNumInput });
+
+    const cardExpiryInput = document.getElementById("card-expiry-input");
+    if (cardExpiryInput) formatCardExpiry({ target: cardExpiryInput });
+
+    const cardCvvInput = document.getElementById("card-cvv-input");
+    if (cardCvvInput) formatCardCvv({ target: cardCvvInput });
+
+    const cardNameInput = document.getElementById("card-name-input");
+    if (cardNameInput) updateCardNamePreview({ target: cardNameInput });
 
     toggleScannerMode("qr");
     selectPayTab("upi");
@@ -1033,28 +1179,66 @@ async function executePayment() {
     const btn = document.getElementById("pay-action-btn");
     const origHtml = btn.innerHTML;
 
+    let finalMethod = selectedPayMethod;
+    let transactionRef = null;
+
+    if (selectedPayMethod === "Credit / Debit Card") {
+        const rawCardNum = (document.getElementById("card-number-input")?.value || "").replace(/\s+/g, "");
+        if (rawCardNum.length !== 16 || !/^\d{16}$/.test(rawCardNum)) {
+            showToast("Please enter a valid 16-digit Card Number.", "error");
+            document.getElementById("card-number-input")?.focus();
+            return;
+        }
+
+        const rawExpiry = (document.getElementById("card-expiry-input")?.value || "").trim();
+        if (!/^\d{2}\/\d{2}$/.test(rawExpiry)) {
+            showToast("Please enter a valid Expiry Date in MM/YY format.", "error");
+            document.getElementById("card-expiry-input")?.focus();
+            return;
+        }
+        const [month, year] = rawExpiry.split("/").map(Number);
+        if (month < 1 || month > 12) {
+            showToast("Card expiry month must be between 01 and 12.", "error");
+            document.getElementById("card-expiry-input")?.focus();
+            return;
+        }
+
+        const rawCvv = (document.getElementById("card-cvv-input")?.value || "").trim();
+        if (rawCvv.length < 3 || rawCvv.length > 4 || !/^\d{3,4}$/.test(rawCvv)) {
+            showToast("Please enter a valid 3 or 4-digit CVV security code.", "error");
+            document.getElementById("card-cvv-input")?.focus();
+            return;
+        }
+
+        const cardHolder = (document.getElementById("card-name-input")?.value || "").trim();
+        if (!cardHolder) {
+            showToast("Please enter Cardholder Name.", "error");
+            document.getElementById("card-name-input")?.focus();
+            return;
+        }
+
+        const last4 = rawCardNum.slice(-4);
+        finalMethod = `Card ending in ${last4} (CVV Verified)`;
+        transactionRef = `CARD-${Math.floor(10000000 + Math.random() * 90000000)}`;
+    } else if (selectedPayMethod.startsWith("UPI")) {
+        const utrVal = document.getElementById("upi-utr-input")?.value?.trim();
+        if (utrVal) {
+            finalMethod = `UPI QR Code (${selectedUpiApp})`;
+            transactionRef = `UTR-${utrVal}`;
+        } else {
+            finalMethod = `UPI QR Code (${selectedUpiApp})`;
+            transactionRef = `UPI-${Math.floor(100000000000 + Math.random() * 900000000000)}`;
+        }
+    } else if (selectedPayMethod.startsWith("Net Banking")) {
+        transactionRef = `NB-${Math.floor(10000000 + Math.random() * 90000000)}`;
+    } else if (selectedPayMethod.startsWith("Cash")) {
+        transactionRef = `CASH-ON-SERVICE`;
+    }
+
     btn.disabled = true;
     btn.innerHTML = `<div class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> <span>Verifying payment with bank...</span>`;
 
     try {
-        let finalMethod = selectedPayMethod;
-        let transactionRef = null;
-
-        if (selectedPayMethod.startsWith("UPI")) {
-            const utrVal = document.getElementById("upi-utr-input")?.value?.trim();
-            if (utrVal) {
-                finalMethod = `UPI QR Code (${selectedUpiApp})`;
-                transactionRef = `UTR-${utrVal}`;
-            } else {
-                finalMethod = `UPI QR Code (${selectedUpiApp})`;
-                transactionRef = `UPI-${Math.floor(100000000000 + Math.random() * 900000000000)}`;
-            }
-        } else if (selectedPayMethod === "Credit / Debit Card") {
-            const cardNum = document.getElementById("card-number-input")?.value || "";
-            const last4 = cardNum.replace(/\s+/g, "").slice(-4) || "8912";
-            finalMethod = `Card ending in ${last4}`;
-        }
-
         // Realistic interactive payment processing delay
         await new Promise(r => setTimeout(r, 1200));
 

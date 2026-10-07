@@ -34,6 +34,10 @@ def run_migrations():
                 if col_names_wp:
                     if "aadhaar_number" not in col_names_wp:
                         conn.execute(text("ALTER TABLE worker_profiles ADD COLUMN aadhaar_number VARCHAR(20)"))
+                    if "payment_qr_url" not in col_names_wp:
+                        conn.execute(text("ALTER TABLE worker_profiles ADD COLUMN payment_qr_url VARCHAR(255)"))
+                    if "upi_id" not in col_names_wp:
+                        conn.execute(text("ALTER TABLE worker_profiles ADD COLUMN upi_id VARCHAR(100)"))
                     conn.commit()
     except Exception as e:
         print(f"Migration note: {e}")

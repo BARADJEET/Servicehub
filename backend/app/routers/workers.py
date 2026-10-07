@@ -8,7 +8,7 @@ from ..config import UPLOAD_DIR
 from ..database import get_db
 from ..models.user import User, WorkerProfile
 from ..models.category import ServiceCategory
-from ..schemas.worker_schema import WorkerRegister, WorkerResponse, WorkerProfileUpdate
+from ..schemas.worker_schema import WorkerRegister, WorkerResponse, WorkerProfileUpdate, WorkerQRUpdate
 from ..schemas.auth_schema import Token
 from ..services.auth_service import get_password_hash, create_access_token, get_current_user, require_worker
 from ..services.matching_service import MatchingService
@@ -42,6 +42,11 @@ def register_worker(payload: WorkerRegister, db: Session = Depends(get_db)):
     if not cat:
         raise HTTPException(status_code=404, detail="Selected service category not found")
 
+    clean_phone = "".join(c for c in payload.phone if c.isdigit())
+    if len(clean_phone) != 10:
+        raise HTTPException(status_code=400, detail="Mobile number must be exactly 10 digits")
+    payload.phone = clean_phone
+
     user = User(
         full_name=payload.full_name,
         email=payload.email.lower().strip(),
@@ -63,6 +68,8 @@ def register_worker(payload: WorkerRegister, db: Session = Depends(get_db)):
         locality=payload.locality or "Navrangpura",
         aadhaar_number=payload.aadhaar_number,
         id_proof_url=payload.id_proof_url,
+        payment_qr_url=payload.payment_qr_url,
+        upi_id=payload.upi_id,
         is_verified=False # Requires admin review
     )
     db.add(profile)
@@ -87,6 +94,39 @@ def upload_aadhaar_public(file: UploadFile = File(...)):
         "file_url": f"/uploads/{dest_name}",
         "filename": file.filename
     }
+
+@router.post("/upload-qr")
+def upload_worker_qr(file: UploadFile = File(...)):
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    file_ext = Path(file.filename).suffix or ".jpg"
+    dest_name = f"worker_qr_{uuid.uuid4().hex[:12]}{file_ext}"
+    dest_path = UPLOAD_DIR / dest_name
+
+    with open(dest_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    return {
+        "status": "success",
+        "file_url": f"/uploads/{dest_name}",
+        "filename": file.filename
+    }
+
+@router.patch("/profile/qr", response_model=WorkerResponse)
+def update_worker_qr(
+    payload: WorkerQRUpdate,
+    current_user: User = Depends(require_worker),
+    db: Session = Depends(get_db)
+):
+    profile = db.query(WorkerProfile).filter(WorkerProfile.user_id == current_user.id).first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Worker profile not found")
+    if payload.payment_qr_url is not None:
+        profile.payment_qr_url = payload.payment_qr_url
+    if payload.upi_id is not None:
+        profile.upi_id = payload.upi_id
+    db.commit()
+    db.refresh(profile)
+    return profile
 
 @router.post("/upload-id", response_model=WorkerResponse)
 def upload_kyc_document(

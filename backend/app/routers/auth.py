@@ -9,6 +9,15 @@ router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
 @router.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
 def register(payload: UserRegister, db: Session = Depends(get_db)):
+    if payload.phone:
+        clean_phone = "".join(c for c in payload.phone if c.isdigit())
+        if len(clean_phone) != 10:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Mobile number must be exactly 10 digits"
+            )
+        payload.phone = clean_phone
+
     existing = db.query(User).filter((User.email == payload.email) | (User.phone == payload.phone)).first()
     if existing:
         raise HTTPException(
@@ -32,11 +41,31 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(payload: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == payload.email.lower().strip()).first()
+    identifier = (payload.email_or_phone or payload.email or "").strip()
+    if not identifier:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Please provide an email address or 10-digit mobile number"
+        )
+
+    # Check if identifier is a phone number (numeric digits without @)
+    clean_digits = "".join(c for c in identifier if c.isdigit())
+    is_phone_attempt = "@" not in identifier and len(clean_digits) > 0
+
+    if is_phone_attempt:
+        if len(clean_digits) != 10:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Mobile number must be exactly 10 digits"
+            )
+        user = db.query(User).filter(User.phone == clean_digits).first()
+    else:
+        user = db.query(User).filter(User.email == identifier.lower()).first()
+
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password"
+            detail="Incorrect email/mobile number or password"
         )
     if not user.is_active:
         raise HTTPException(

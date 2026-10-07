@@ -10,7 +10,8 @@ class UserRegister(BaseModel):
     role: Optional[str] = "customer" # customer, worker, admin
 
 class UserLogin(BaseModel):
-    email: str
+    email: Optional[str] = None
+    email_or_phone: Optional[str] = None
     password: str
 
 class UserResponse(BaseModel):

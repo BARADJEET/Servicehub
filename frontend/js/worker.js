@@ -22,6 +22,7 @@ function checkWorkerAuth() {
         if (el) el.innerText = user.full_name;
         document.getElementById("worker-login-modal")?.classList.add("hidden");
         document.getElementById("worker-register-modal")?.classList.add("hidden");
+        loadWorkerQrSettings();
     }
 }
 
@@ -230,11 +231,19 @@ async function recordCashReceipt(bId, amount) {
 
 async function handleWorkerLogin(e) {
     e.preventDefault();
-    const email = document.getElementById("worker-login-email").value;
+    const identifier = document.getElementById("worker-login-email").value.trim();
     const pass = document.getElementById("worker-login-password").value;
 
+    const cleanDigits = identifier.replace(/\D/g, "");
+    if (!identifier.includes("@") && cleanDigits.length > 0) {
+        if (cleanDigits.length !== 10) {
+            showToast("Mobile number must be exactly 10 digits", "error");
+            return;
+        }
+    }
+
     try {
-        const res = await Api.login(email, pass);
+        const res = await Api.login(identifier, pass);
         if (res.user.role !== "worker") throw new Error("This account is not a worker profile");
         Api.setToken(res.access_token);
         Api.setUser(res.user);
@@ -249,6 +258,68 @@ async function handleWorkerLogin(e) {
 function handleWorkerLogout() {
     Api.clearAuth();
     window.location.reload();
+}
+
+// ==================== WORKER PAYOUT QR CODE & UPI SETTINGS ====================
+
+let currentWorkerQrUrl = "/static/images/payment_qr.png";
+
+async function loadWorkerQrSettings() {
+    try {
+        const profile = await Api.getProfile();
+        if (profile && profile.worker_profile) {
+            if (profile.worker_profile.upi_id) {
+                const el = document.getElementById("worker-upi-id-input");
+                if (el) el.value = profile.worker_profile.upi_id;
+            }
+            if (profile.worker_profile.payment_qr_url) {
+                currentWorkerQrUrl = profile.worker_profile.payment_qr_url;
+                const img = document.getElementById("worker-console-qr-img");
+                if (img) img.src = currentWorkerQrUrl;
+                const msg = document.getElementById("worker-qr-status-msg");
+                if (msg) msg.innerText = "Active: Customers see this QR code during payment.";
+            }
+        }
+    } catch (e) {
+        console.warn("Could not load worker profile QR settings:", e);
+    }
+}
+
+async function handleWorkerQrUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+        showToast("File size exceeds 10MB. Please choose a smaller image.", "error");
+        return;
+    }
+
+    const msg = document.getElementById("worker-qr-status-msg");
+    if (msg) msg.innerText = "Encrypting & uploading your payment QR code...";
+
+    try {
+        const res = await Api.uploadWorkerQr(file);
+        currentWorkerQrUrl = res.file_url;
+        const img = document.getElementById("worker-console-qr-img");
+        if (img) img.src = res.file_url;
+        if (msg) msg.innerText = `Uploaded: ${file.name}. Click "Save & Activate QR" to apply.`;
+        showToast("Payment QR Code uploaded! Click Save to activate.");
+    } catch (err) {
+        if (msg) msg.innerText = `Upload failed: ${err.message}`;
+        showToast(err.message, "error");
+    }
+}
+
+async function saveWorkerUpiSettings() {
+    const upiId = document.getElementById("worker-upi-id-input")?.value?.trim();
+    try {
+        await Api.updateWorkerQr(currentWorkerQrUrl, upiId || null);
+        showToast("Personal UPI QR Code & VPA saved and activated for customer payments!");
+        const msg = document.getElementById("worker-qr-status-msg");
+        if (msg) msg.innerText = "Active: Customers will see this QR code during payment.";
+    } catch (err) {
+        showToast(err.message, "error");
+    }
 }
 
 // ==================== WORKER REGISTRATION MODAL CONTROLLERS ====================
@@ -382,8 +453,10 @@ async function handleWorkerRegisterSubmit(e) {
         return;
     }
 
-    if (phone.length < 10) {
-        showToast("Phone number must be at least 10 digits.", "error");
+    const cleanPhone = phone.replace(/[\s\-\(\)\+]/g, "");
+    if (cleanPhone.length !== 10 || !/^\d{10}$/.test(cleanPhone)) {
+        showToast("Mobile number must be exactly 10 digits.", "error");
+        document.getElementById("wreg-phone")?.focus();
         return;
     }
 

@@ -17,6 +17,8 @@ class WorkerRegister(BaseModel):
     locality: Optional[str] = "Navrangpura"
     aadhaar_number: Optional[str] = None
     id_proof_url: Optional[str] = None
+    payment_qr_url: Optional[str] = None
+    upi_id: Optional[str] = None
 
 class WorkerProfileUpdate(BaseModel):
     hourly_rate: Optional[float] = None
@@ -27,6 +29,12 @@ class WorkerProfileUpdate(BaseModel):
     locality: Optional[str] = None
     aadhaar_number: Optional[str] = None
     id_proof_url: Optional[str] = None
+    payment_qr_url: Optional[str] = None
+    upi_id: Optional[str] = None
+
+class WorkerQRUpdate(BaseModel):
+    payment_qr_url: Optional[str] = None
+    upi_id: Optional[str] = None
 
 class WorkerResponse(BaseModel):
     id: int
@@ -39,6 +47,8 @@ class WorkerResponse(BaseModel):
     locality: str
     aadhaar_number: Optional[str] = None
     id_proof_url: Optional[str] = None
+    payment_qr_url: Optional[str] = None
+    upi_id: Optional[str] = None
     is_verified: bool
     is_available: bool
     is_featured: bool
