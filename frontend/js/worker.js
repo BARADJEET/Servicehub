@@ -52,7 +52,7 @@ async function loadWorkerJobQueue(isSilent = false) {
     if (!container) return;
 
     try {
-        const bookings = await Api.getMyBookings();
+        const bookings = await Api.getWorkerJobs();
         const currentHash = JSON.stringify(bookings.map(b => ({
             id: b.id,
             status: b.status,

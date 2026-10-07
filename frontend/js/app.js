@@ -53,6 +53,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 function initAuthUI() {
     const user = Api.getUser();
     const authContainer = document.getElementById("auth-btn-container");
+    const navBookingsBtn = document.querySelector("[data-nav-target='bookings']");
+    const mainNav = document.querySelector("header nav");
+
+    if (user && user.role === "worker") {
+        if (navBookingsBtn) {
+            navBookingsBtn.classList.add("hidden");
+        }
+        let workerLink = document.getElementById("nav-worker-console-link");
+        if (!workerLink && mainNav) {
+            workerLink = document.createElement("a");
+            workerLink.id = "nav-worker-console-link";
+            workerLink.href = "/worker";
+            workerLink.className = "px-4 py-2 rounded-xl text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition duration-150 flex items-center gap-1.5";
+            workerLink.innerHTML = `<i data-lucide="wrench" class="w-3.5 h-3.5"></i> Worker Console`;
+            mainNav.appendChild(workerLink);
+            if (window.lucide) lucide.createIcons();
+        }
+    } else {
+        if (navBookingsBtn) {
+            navBookingsBtn.classList.remove("hidden");
+        }
+        const workerLink = document.getElementById("nav-worker-console-link");
+        if (workerLink) workerLink.remove();
+    }
+
     if (!authContainer) return;
 
     if (user) {
@@ -60,7 +85,7 @@ function initAuthUI() {
             <div class="flex items-center gap-3">
                 <div class="text-right hidden sm:block">
                     <span class="block text-xs font-black text-slate-900 leading-tight">${user.full_name}</span>
-                    <span class="block text-[10px] font-bold text-indigo-600 capitalize">${user.role}</span>
+                    <span class="block text-[10px] font-bold text-indigo-600 capitalize">${user.role === 'worker' ? 'Technician (Pro)' : user.role}</span>
                 </div>
                 <button onclick="handleLogout()" class="px-4 py-2 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-700 text-xs font-bold rounded-2xl transition duration-150 cursor-pointer">
                     Logout
@@ -152,9 +177,34 @@ async function searchWorkers(categoryId = null) {
             return;
         }
 
+        const currentUser = Api.getUser();
+
         container.innerHTML = workers.map(w => {
             const catSlug = w.category?.slug || "plumbing";
             const avatarUrl = WORKER_AVATARS[catSlug] || `https://api.dicebear.com/7.x/avataaars/svg?seed=${w.user?.full_name}`;
+            const isSelf = currentUser && currentUser.role === "worker" && currentUser.id === w.user_id;
+            const isWorkerLoggedIn = currentUser && currentUser.role === "worker";
+
+            let actionBtnHtml = "";
+            if (isSelf) {
+                actionBtnHtml = `
+                    <a href="/worker" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs rounded-2xl shadow-md transition flex items-center justify-center gap-2">
+                        <i data-lucide="wrench" class="w-4 h-4 text-emerald-400"></i> Your Worker Profile (View Console)
+                    </a>
+                `;
+            } else if (isWorkerLoggedIn) {
+                actionBtnHtml = `
+                    <button disabled class="w-full py-3.5 bg-slate-100 text-slate-400 font-bold text-xs rounded-2xl border border-slate-200 cursor-not-allowed flex items-center justify-center gap-2" title="Switch to a customer account to hire service pros">
+                        <i data-lucide="shield-alert" class="w-4 h-4 text-slate-400"></i> Pro Account (Customer Only)
+                    </button>
+                `;
+            } else {
+                actionBtnHtml = `
+                    <button onclick="openBookingModal(${w.id})" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-2xl shadow-md shadow-indigo-600/25 transition flex items-center justify-center gap-2 cursor-pointer">
+                        <i data-lucide="calendar-check" class="w-4 h-4"></i> Book Professional
+                    </button>
+                `;
+            }
             
             return `
                 <div class="p-6 bg-white rounded-3xl border border-slate-200/80 shadow-xs hover-lift flex flex-col justify-between relative overflow-hidden transition-all duration-200">
@@ -200,9 +250,7 @@ async function searchWorkers(categoryId = null) {
                     </div>
 
                     <div class="mt-5 pt-3">
-                        <button onclick="openBookingModal(${w.id})" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-2xl shadow-md shadow-indigo-600/25 transition flex items-center justify-center gap-2 cursor-pointer">
-                            <i data-lucide="calendar-check" class="w-4 h-4"></i> Book Professional
-                        </button>
+                        ${actionBtnHtml}
                     </div>
                 </div>
             `;
@@ -223,6 +271,10 @@ function filterByCategory(catId) {
 
 async function openBookingModal(workerId) {
     const user = Api.getUser();
+    if (user && user.role === "worker") {
+        showToast("Technician accounts cannot book or hire services. Please log in with a customer account.", "error");
+        return;
+    }
     if (!user) {
         showToast("Please sign in or register to book a service.", "error");
         openLoginModal();
@@ -246,6 +298,11 @@ function closeBookingModal() {
 
 async function handleBookingSubmit(e) {
     e.preventDefault();
+    const user = Api.getUser();
+    if (user && user.role === "worker") {
+        showToast("Technicians cannot hire or book services. Please use a customer account.", "error");
+        return;
+    }
     if (!selectedWorker) return;
 
     const payload = {
@@ -299,6 +356,35 @@ async function loadMyBookings(isSilent = false) {
                 <button onclick="openLoginModal()" class="mt-4 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-2xl shadow-md transition cursor-pointer">
                     Sign In Now
                 </button>
+            </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+        return;
+    }
+
+    if (user.role === "worker") {
+        if (isSilent) return;
+        container.innerHTML = `
+            <div class="p-10 text-center bg-white rounded-3xl border border-slate-200 shadow-xs max-w-xl mx-auto my-6">
+                <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-3 border border-indigo-100">
+                    <i data-lucide="wrench" class="w-7 h-7"></i>
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-wider bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">Technician Account Active</span>
+                <h4 class="font-black text-lg text-slate-900 mt-3">Technician Work Dispatch Portal</h4>
+                <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                    You are signed in with a <strong>Service Professional</strong> account. The "My Bookings & OTPs" section is exclusively for customers hiring services to view customer verification OTPs.
+                </p>
+                <p class="text-xs text-slate-500 mt-1">
+                    To manage your incoming customer work queue, accept jobs, and verify OTPs, open your <strong>Worker Hub</strong>.
+                </p>
+                <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/worker" class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-2xl shadow-md transition flex items-center justify-center gap-2">
+                        <i data-lucide="briefcase" class="w-4 h-4"></i> Open Worker Console &amp; Work Queue
+                    </a>
+                    <button onclick="handleLogout()" class="w-full sm:w-auto px-5 py-3 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 font-bold text-xs rounded-2xl transition">
+                        Switch Account / Logout
+                    </button>
+                </div>
             </div>
         `;
         if (window.lucide) lucide.createIcons();
@@ -1023,6 +1109,12 @@ function handleLogout() {
 }
 
 function switchTab(tabId) {
+    const user = Api.getUser();
+    if (tabId === "bookings" && user && user.role === "worker") {
+        window.location.href = "/worker";
+        return;
+    }
+
     document.querySelectorAll(".view-section").forEach(s => s.classList.add("hidden"));
     document.getElementById(`view-${tabId}`)?.classList.remove("hidden");
 

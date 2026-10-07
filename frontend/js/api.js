@@ -157,6 +157,9 @@ const Api = {
     getMyBookings() {
         return this.request("/api/bookings/my");
     },
+    getWorkerJobs() {
+        return this.request("/api/bookings/worker-jobs");
+    },
     getBookingDetails(bookingId) {
         return this.request(`/api/bookings/${bookingId}`);
     },

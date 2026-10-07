@@ -14,9 +14,20 @@ router = APIRouter(prefix="/api/bookings", tags=["Bookings & OTP Security"])
 
 @router.post("/", response_model=BookingResponse, status_code=status.HTTP_201_CREATED)
 def create_booking(payload: BookingCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.role == "worker":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Technicians and service workers cannot book services. Please log in with a customer account to make bookings."
+        )
+
     worker = db.query(WorkerProfile).filter(WorkerProfile.id == payload.worker_id).first()
     if not worker:
         raise HTTPException(status_code=404, detail="Worker not found")
+    if worker.user_id == current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Technicians cannot hire or book their own service profile."
+        )
     if not worker.is_available:
         raise HTTPException(status_code=400, detail="Worker is currently marked unavailable")
 
@@ -45,11 +56,10 @@ def create_booking(payload: BookingCreate, current_user: User = Depends(get_curr
 @router.get("/my", response_model=List[BookingResponse])
 def get_my_bookings(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if current_user.role == "worker":
-        worker = db.query(WorkerProfile).filter(WorkerProfile.user_id == current_user.id).first()
-        if not worker: return []
-        bookings = db.query(Booking).filter(Booking.worker_id == worker.id).order_by(Booking.created_at.desc()).all()
-    else:
-        bookings = db.query(Booking).filter(Booking.customer_id == current_user.id).order_by(Booking.created_at.desc()).all()
+        # Workers do not have customer bookings; their assigned dispatch jobs are accessed via /worker-jobs
+        return []
+
+    bookings = db.query(Booking).filter(Booking.customer_id == current_user.id).order_by(Booking.created_at.desc()).all()
 
     # Guarantee End OTP is generated instantly for any IN_PROGRESS booking
     modified = False
@@ -72,12 +82,63 @@ def get_my_bookings(current_user: User = Depends(get_current_user), db: Session 
 
     return bookings
 
+@router.get("/worker-jobs", response_model=List[BookingResponse])
+def get_worker_jobs(current_user: User = Depends(require_worker), db: Session = Depends(get_db)):
+    worker = db.query(WorkerProfile).filter(WorkerProfile.user_id == current_user.id).first()
+    if not worker:
+        return []
+    bookings = db.query(Booking).filter(Booking.worker_id == worker.id).order_by(Booking.created_at.desc()).all()
+
+    # Guarantee End OTP is generated instantly for any IN_PROGRESS booking
+    modified = False
+    for b in bookings:
+        if b.status == "IN_PROGRESS":
+            has_end = any(o.otp_type == "END" for o in b.otps)
+            if not has_end:
+                end_otp = OTPVerification(
+                    booking_id=b.id,
+                    otp_type="END",
+                    otp_code=BookingService.generate_otp_code(),
+                    is_verified=False
+                )
+                db.add(end_otp)
+                modified = True
+    if modified:
+        db.commit()
+        for b in bookings:
+            db.refresh(b)
+
+    # CRITICAL SECURITY RULE: Workers must NEVER see raw customer OTP codes!
+    # The customer holds the OTP and gives it verbally at doorstep upon arrival and completion.
+    sanitized_bookings = []
+    for b in bookings:
+        resp = BookingResponse.model_validate(b)
+        if resp.otps:
+            for o in resp.otps:
+                o.otp_code = "****" # Masked: workers cannot peek at customer OTPs
+        sanitized_bookings.append(resp)
+
+    return sanitized_bookings
+
 @router.get("/{booking_id}", response_model=BookingResponse)
 def get_booking_details(booking_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     booking = db.query(Booking).filter(Booking.id == booking_id).first()
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
-    return booking
+
+    if current_user.role == "worker":
+        worker = db.query(WorkerProfile).filter(WorkerProfile.user_id == current_user.id).first()
+        if not worker or booking.worker_id != worker.id:
+            raise HTTPException(status_code=403, detail="Not authorized to view this booking")
+        resp = BookingResponse.model_validate(booking)
+        if resp.otps:
+            for o in resp.otps:
+                o.otp_code = "****"
+        return resp
+    else:
+        if booking.customer_id != current_user.id and current_user.role != "admin":
+            raise HTTPException(status_code=403, detail="Not authorized to view this booking")
+        return booking
 
 @router.post("/{booking_id}/accept", response_model=BookingResponse)
 def accept_booking(booking_id: int, current_user: User = Depends(require_worker), db: Session = Depends(get_db)):
