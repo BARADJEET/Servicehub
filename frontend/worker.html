@@ -50,10 +50,13 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
                 <a href="/" class="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 px-3 py-2 rounded-xl border border-slate-700/60 transition">
                     <i data-lucide="arrow-left" class="w-4 h-4 text-indigo-400"></i> Marketplace
                 </a>
+                <button type="button" onclick="openWorkerRegisterModal()" class="px-3.5 py-2 rounded-xl text-xs font-extrabold bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-600/30 transition flex items-center gap-1.5 cursor-pointer">
+                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Register as Pro
+                </button>
                 <span id="worker-display-name" class="text-xs text-slate-200 font-bold bg-slate-800 px-3.5 py-2 rounded-xl border border-slate-700 hidden sm:inline-block">
                     Ramesh Mistri
                 </span>
@@ -207,10 +210,11 @@
                 </button>
             </form>
 
-            <div class="mt-5 pt-4 border-t border-slate-800 text-center text-xs text-slate-400">
+            <div class="mt-5 pt-4 border-t border-slate-800 flex flex-col items-center gap-2 text-center text-xs text-slate-400">
                 <span>New Service Technician?</span>
-                <button type="button" onclick="openWorkerRegisterModal()" class="text-indigo-400 font-extrabold hover:text-indigo-300 hover:underline ml-1 cursor-pointer">
-                    Register with Aadhaar Card &rarr;
+                <button type="button" onclick="openWorkerRegisterModal()" class="w-full py-3 px-4 rounded-xl border border-indigo-500/50 bg-indigo-950/70 hover:bg-indigo-900 text-indigo-300 hover:text-white font-extrabold transition cursor-pointer flex items-center justify-center gap-2 shadow-md">
+                    <i data-lucide="user-plus" class="w-4 h-4 text-indigo-400"></i>
+                    <span>Register New Technician Account &rarr;</span>
                 </button>
             </div>
         </div>
@@ -240,6 +244,26 @@
             </p>
 
             <form onsubmit="handleWorkerRegisterSubmit(event)" class="mt-5 space-y-3.5">
+                <!-- Top Inline Error Alert -->
+                <div id="wreg-top-error-msg" class="hidden p-3 rounded-2xl bg-rose-950/90 border border-rose-500/60 text-xs text-rose-200 font-bold flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 text-rose-400 shrink-0"></i>
+                    <span id="wreg-top-error-text">Please complete all required fields.</span>
+                </div>
+
+                <!-- 1-Click Quick Demo Fill Banner -->
+                <div class="p-3.5 bg-gradient-to-r from-indigo-950/90 to-purple-950/80 border border-indigo-700/60 rounded-2xl flex items-center justify-between gap-3 shadow-inner">
+                    <div>
+                        <span class="block text-white font-extrabold text-xs flex items-center gap-1.5">
+                            <span>⚡ Quick Demo Technician Fill</span>
+                            <span class="text-[9px] bg-indigo-500/30 text-indigo-300 border border-indigo-400/30 px-1.5 py-0.5 rounded font-black uppercase">1-Click</span>
+                        </span>
+                        <span class="text-[11px] text-slate-300 block mt-0.5">Auto-fills credentials, plumbing trade &amp; UIDAI sample Aadhaar</span>
+                    </div>
+                    <button type="button" onclick="quickFillWorkerRegister()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-black shadow-md cursor-pointer transition shrink-0">
+                        Auto Fill
+                    </button>
+                </div>
+
                 <!-- Basic Credentials -->
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1">Full Name</label>
@@ -281,8 +305,7 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1">Primary Trade / Service Domain</label>
                     <select id="wreg-category" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs font-bold text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-                        <option value="">Select Primary Trade / Domain</option>
-                        <option value="1">Plumbing Services</option>
+                        <option value="1" selected>Plumbing Services</option>
                         <option value="2">Electrical Services</option>
                         <option value="3">AC &amp; Appliance Repair</option>
                         <option value="4">Home Deep Cleaning</option>
@@ -348,8 +371,14 @@
                     </div>
                 </div>
 
+                <!-- Inline Error Container -->
+                <div id="wreg-error-msg" class="hidden p-3 rounded-2xl bg-rose-950/90 border border-rose-500/60 text-xs text-rose-200 font-bold flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 text-rose-400 shrink-0"></i>
+                    <span id="wreg-error-text">Please correct the highlighted fields.</span>
+                </div>
+
                 <!-- Submit Button -->
-                <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-xl transition flex items-center justify-center gap-2 cursor-pointer mt-3">
+                <button type="submit" id="wreg-submit-btn" onclick="handleWorkerRegisterSubmit(event)" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-xl transition flex items-center justify-center gap-2 cursor-pointer mt-3">
                     <i data-lucide="check-circle" class="w-4 h-4"></i>
                     <span>Register as Verified Technician</span>
                 </button>

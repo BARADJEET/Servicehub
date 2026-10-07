@@ -1095,6 +1095,12 @@
             </div>
 
             <form onsubmit="handleRegisterSubmit(event)" class="mt-5 space-y-3.5">
+                <!-- Top Inline Error Alert Box -->
+                <div id="reg-top-error-msg" class="hidden p-3 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-800 font-bold flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0"></i>
+                    <span id="reg-top-error-text">Please complete all required fields.</span>
+                </div>
+
                 <!-- Common User Fields -->
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
@@ -1134,16 +1140,20 @@
 
                 <!-- ==================== WORKER-SPECIFIC AADHAAR & TRADE VERIFICATION FIELDS ==================== -->
                 <div id="worker-reg-fields" class="hidden space-y-3.5 pt-2 border-t border-slate-200">
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                        <span class="text-xs font-black uppercase tracking-wider text-slate-900">Technician Profile &amp; KYC Verification</span>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span class="text-xs font-black uppercase tracking-wider text-slate-900">Technician Profile &amp; KYC</span>
+                        </div>
+                        <button type="button" onclick="quickFillWorkerRegisterMain()" class="text-[10px] font-black uppercase tracking-wider bg-indigo-100 hover:bg-indigo-600 text-indigo-700 hover:text-white px-2.5 py-1 rounded-lg border border-indigo-200 transition cursor-pointer flex items-center gap-1 shadow-xs">
+                            <span>⚡ Quick Demo Fill</span>
+                        </button>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Primary Trade / Service Domain</label>
                         <select id="reg-worker-category" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-                            <option value="">Select Primary Trade / Domain</option>
-                            <option value="1">Plumbing Services</option>
+                            <option value="1" selected>Plumbing Services</option>
                             <option value="2">Electrical Services</option>
                             <option value="3">AC &amp; Appliance Repair</option>
                             <option value="4">Home Deep Cleaning</option>
@@ -1212,8 +1222,14 @@
                     </div>
                 </div>
 
+                <!-- Inline Error Alert Box -->
+                <div id="reg-error-msg" class="hidden p-3 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-800 font-bold flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0"></i>
+                    <span id="reg-error-text">Please correct the highlighted fields.</span>
+                </div>
+
                 <!-- Submit Button -->
-                <button type="submit" class="w-full py-3.5 btn-brand-primary text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-xl transition flex items-center justify-center gap-2 cursor-pointer mt-3">
+                <button type="submit" id="reg-submit-btn" onclick="handleRegisterSubmit(event)" class="w-full py-3.5 btn-brand-primary text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-xl transition flex items-center justify-center gap-2 cursor-pointer mt-3">
                     <i data-lucide="check-circle" class="w-4 h-4"></i>
                     <span id="reg-submit-btn-text">Register Customer Account</span>
                 </button>

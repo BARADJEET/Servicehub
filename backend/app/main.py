@@ -49,6 +49,8 @@ def serve_customer_home():
     return FileResponse(FRONTEND_DIR / "index.html")
 
 @app.get("/worker")
+@app.get("/worker/register")
+@app.get("/register-worker")
 def serve_worker_portal():
     return FileResponse(FRONTEND_DIR / "worker.html")
 

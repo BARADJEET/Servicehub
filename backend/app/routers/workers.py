@@ -66,8 +66,8 @@ def register_worker(payload: WorkerRegister, db: Session = Depends(get_db)):
         bio=payload.bio,
         city=payload.city or "Ahmedabad",
         locality=payload.locality or "Navrangpura",
-        aadhaar_number=payload.aadhaar_number,
-        id_proof_url=payload.id_proof_url,
+        aadhaar_number=payload.aadhaar_number or "429180239104",
+        id_proof_url=payload.id_proof_url or "/uploads/sample_aadhaar_card.png",
         payment_qr_url=payload.payment_qr_url,
         upi_id=payload.upi_id,
         is_verified=False # Requires admin review
@@ -76,7 +76,7 @@ def register_worker(payload: WorkerRegister, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(profile)
 
-    token = create_access_token(data={"sub": user.id, "role": "worker"})
+    token = create_access_token(data={"sub": str(user.id), "role": "worker", "user_id": user.id})
     return Token(access_token=token, token_type="bearer", user=user)
 
 @router.post("/upload-aadhaar-public")
