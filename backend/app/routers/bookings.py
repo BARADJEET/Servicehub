@@ -248,6 +248,24 @@ def pay_for_booking(
     db.refresh(booking)
     return booking
 
+@router.post("/{booking_id}/cancel", response_model=BookingResponse)
+def cancel_booking(booking_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    booking = db.query(Booking).filter(Booking.id == booking_id).first()
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+
+    worker_user_id = booking.worker.user_id if booking.worker else None
+    if current_user.id != booking.customer_id and current_user.id != worker_user_id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized to cancel this booking")
+
+    if booking.status in ["IN_PROGRESS", "COMPLETED"]:
+        raise HTTPException(status_code=400, detail=f"Cannot cancel booking once it is '{booking.status}'")
+
+    booking.status = "CANCELLED"
+    db.commit()
+    db.refresh(booking)
+    return booking
+
 @router.post("/upload-qr")
 def upload_payment_qr(file: UploadFile = File(...)):
     import shutil

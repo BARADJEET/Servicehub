@@ -4,6 +4,7 @@ from datetime import datetime
 from .auth_schema import UserResponse
 from .worker_schema import WorkerResponse
 from .category_schema import CategoryResponse
+from .review_schema import ReviewResponse
 
 class BookingCreate(BaseModel):
     worker_id: int
@@ -57,6 +58,7 @@ class BookingResponse(BaseModel):
     worker: Optional[WorkerResponse] = None
     category: Optional[CategoryResponse] = None
     otps: Optional[List[OTPResponse]] = []
+    review: Optional[ReviewResponse] = None
 
     class Config:
         from_attributes = True
