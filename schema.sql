@@ -45,6 +45,9 @@ CREATE TABLE IF NOT EXISTS worker_profiles (
     rating_avg FLOAT DEFAULT 5.0,
     total_reviews INT DEFAULT 0,
     total_earnings FLOAT DEFAULT 0.0,
+    aadhaar_number VARCHAR(20) NULL,
+    payment_qr_url VARCHAR(255) NULL,
+    upi_id VARCHAR(100) NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES service_categories(id)
